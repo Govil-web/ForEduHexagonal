@@ -1,0 +1,4 @@
+com\academia\config\TestSecurityConfig.class
+com\academia\domain\model\aggregates\UserAccountTest.class
+com\academia\infrastructure\web\controllers\StudentControllerIntegrationTest.class
+com\academia\architecture\HexagonalArchitectureTest.class

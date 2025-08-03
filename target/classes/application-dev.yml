@@ -1,0 +1,40 @@
+# ===================================================================
+# PERFIL DE DESARROLLO (dev)
+# Optimizado para la productividad del desarrollador local.
+# ===================================================================
+spring:
+  # Conexión a la base de datos local de desarrollo
+  datasource:
+    url: jdbc:mysql://mysqlforstudent.mysql.database.azure.com:3306/foredu_new
+    username: adminuser
+    password: YourStrongPassword123!
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    show-sql: true # Muestra las queries SQL en la consola
+    hibernate:
+      ddl-auto: validate # Valida que el esquema de la BD coincida con las entidades
+      dialect: org.hibernate.dialect.MySQLDialect
+
+  # Desactivar caché en desarrollo para ver los cambios inmediatamente
+  cache:
+    type: none
+
+  # Habilitar H2 Console para inspeccionar la BD (si se usa H2 temporalmente)
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+# Configuración de Logging Detallado
+logging:
+  level:
+    root: INFO
+    com.academia: DEBUG # Log detallado para nuestro código
+    org.springframework.web: DEBUG
+    org.hibernate.SQL: DEBUG # Muestra las queries SQL generadas
+    org.hibernate.type.descriptor.sql: TRACE # Muestra los parámetros de las queries
+
+# Configuración JWT para desarrollo
+jwt:
+  secret: "clave-secreta-muy-larga-y-segura-para-el-entorno-de-desarrollo"
+  expiration: 86400000 # 24 horas

@@ -1,0 +1,41 @@
+# ===================================================================
+# PERFIL DE PRUEBAS (test)
+# Optimizado para pruebas automatizadas rápidas, aisladas y consistentes.
+# ===================================================================
+spring:
+  # Configuración para usar una base de datos en memoria H2
+  datasource:
+    # URL de conexión a H2 en modo memoria.
+    # MODE=MySQL: Hace que H2 se comporte de manera más similar a MySQL para mayor consistencia.
+    # DB_CLOSE_DELAY=-1: Evita que la base de datos se borre entre conexiones dentro de la misma ejecución de tests.
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=MySQL
+    driver-class-name: org.h2.Driver # Driver explícito para H2.
+    username: sa
+    password: "" # La contraseña para H2 en memoria suele ser vacía.
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect # Dialecto específico para H2.
+    hibernate:
+      # La mejor práctica para tests: Hibernate crea el esquema al inicio y lo destruye al final.
+      # Esto garantiza que cada ejecución de la suite de pruebas sea limpia y aislada.
+      ddl-auto: create-drop
+    show-sql: false # Generalmente no es necesario ver el SQL en la salida de los tests.
+
+  # Desactivar Flyway en pruebas. Dejamos que Hibernate maneje el esquema para velocidad y aislamiento.
+  flyway:
+    enabled: false
+
+  # Desactivar caché en pruebas para evitar que los tests interfieran entre sí.
+  cache:
+    type: none
+
+  # Usar un JWT secret fijo para que los tokens generados en las pruebas sean predecibles.
+  jwt:
+    secret: "clave-secreta-fija-para-pruebas-automatizadas-no-usar-en-otro-lugar"
+    expiration: 60000 # 1 minuto, para probar también la expiración si es necesario.
+
+# Logging para pruebas: Silencioso para no saturar la salida. Solo mostrar errores.
+logging:
+  level:
+    root: ERROR
+    com.academia: INFO # Podemos ver logs de nuestra app si es necesario.
