@@ -65,7 +65,10 @@ C:\Projects\backForEduArqHexa\src\main\java\com\academia\infrastructure\persiste
 C:\Projects\backForEduArqHexa\src\main\java\com\academia\infrastructure\persistence\jpa\repositories\SpringOrganizationRepository.java
 C:\Projects\backForEduArqHexa\src\main\java\com\academia\infrastructure\persistence\jpa\repositories\SpringStudentProfileRepository.java
 C:\Projects\backForEduArqHexa\src\main\java\com\academia\infrastructure\persistence\jpa\repositories\SpringUserRepository.java
+C:\Projects\backForEduArqHexa\src\main\java\com\academia\infrastructure\web\controllers\CourseController.java
 C:\Projects\backForEduArqHexa\src\main\java\com\academia\infrastructure\web\controllers\StudentController.java
+C:\Projects\backForEduArqHexa\src\main\java\com\academia\infrastructure\web\mappers\EnrollStudentRequestMapper.java
 C:\Projects\backForEduArqHexa\src\main\java\com\academia\infrastructure\web\mappers\RegisterStudentRequestMapper.java
+C:\Projects\backForEduArqHexa\src\main\java\com\academia\infrastructure\web\requests\EnrollStudentInCourseRequest.java
 C:\Projects\backForEduArqHexa\src\main\java\com\academia\infrastructure\web\requests\RegisterStudentRequest.java
 C:\Projects\backForEduArqHexa\src\main\java\com\academia\SistemaAcademicoApplication.java

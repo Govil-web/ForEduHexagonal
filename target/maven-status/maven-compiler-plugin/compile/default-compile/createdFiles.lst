@@ -3,6 +3,7 @@ com\academia\infrastructure\config\OpenApiConfig.class
 com\academia\domain\ports\in\dtos\EnrollmentResultDTO.class
 com\academia\domain\model\entities\Role.class
 com\academia\domain\ports\in\dtos\StudentDetailsDTO.class
+com\academia\infrastructure\web\requests\EnrollStudentInCourseRequest.class
 com\academia\domain\model\entities\Staff.class
 com\academia\infrastructure\web\controllers\StudentController.class
 com\academia\application\services\RegisterNewStudentServiceImpl.class
@@ -39,6 +40,7 @@ com\academia\infrastructure\persistence\jpa\mappers\OrganizationMapper.class
 com\academia\application\services\EnrollStudentInCourseServiceImpl.class
 com\academia\domain\model\aggregates\UserAccount.class
 com\academia\domain\model\enums\RoleScope.class
+com\academia\infrastructure\web\mappers\EnrollStudentRequestMapperImpl.class
 com\academia\application\mappers\StudentDTOMapperImpl.class
 com\academia\domain\model\aggregates\Organization.class
 com\academia\infrastructure\config\DomainServiceConfig.class
@@ -57,6 +59,7 @@ com\academia\infrastructure\web\mappers\RegisterStudentRequestMapperImpl.class
 com\academia\domain\model\valueobjects\user\HashedPassword.class
 com\academia\domain\model\events\UserEvents$AccountActivated.class
 com\academia\domain\model\entities\Guardian.class
+com\academia\infrastructure\web\controllers\CourseController.class
 com\academia\application\services\FindStudentDetailsServiceImpl.class
 com\academia\domain\model\events\UserAccountEvents.class
 com\academia\infrastructure\persistence\adapters\JpaOrganizationRepositoryAdapter.class
@@ -73,6 +76,7 @@ com\academia\infrastructure\persistence\jpa\mappers\StudentMapper.class
 com\academia\domain\model\valueobjects\academic\Grade.class
 com\academia\domain\model\enums\AccountStatus.class
 com\academia\infrastructure\persistence\jpa\mappers\StudentMapperImpl.class
+com\academia\infrastructure\web\mappers\EnrollStudentRequestMapper.class
 com\academia\domain\model\events\UserAccountEvents$UserRegisteredEvent.class
 com\academia\domain\model\entities\AcademicTerm.class
 com\academia\domain\model\valueobjects\ids\SubjectId.class

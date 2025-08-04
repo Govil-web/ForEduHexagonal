@@ -15,11 +15,22 @@ public class EnrollmentEligibilityChecker {
     // private final CourseRepository courseRepository;
 
     public boolean isStudentEligible(Student student, Course course) {
-        // Lógica de ejemplo:
+        // Regla 1: El estudiante y el curso deben pertenecer a la misma organización.
+        if (!student.getOrganizationId().equals(course.getSubject().getOrganizationId())) {
+            throw new IllegalStateException("El estudiante y el curso no pertenecen a la misma organización.");
+        }
+
+        // Regla 2: El estudiante no debe estar ya inscrito en el curso.
+        boolean alreadyEnrolled = course.getEnrollments().stream()
+                .anyMatch(enrollment -> enrollment.getStudentId().equals(student.getAccountId()));
+        if (alreadyEnrolled) {
+            throw new IllegalStateException("El estudiante ya está inscrito en este curso.");
+        }
+
+        // Lógica futura:
         // 1. Verificar si el grado del estudiante es compatible con el del curso.
-        // 2. Consultar el historial de inscripciones del estudiante (a través de un repositorio)
-        //    para ver si ha aprobado las materias pre-requisito.
-        // 3. Verificar si hay cupos disponibles en el curso (si esa lógica estuviera aquí).
+        // 2. Consultar el historial de inscripciones para ver si ha aprobado pre-requisitos.
+        // 3. Verificar si hay cupos disponibles.
 
         return true; // Simplificado por ahora
     }
