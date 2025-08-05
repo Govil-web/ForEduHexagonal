@@ -14,21 +14,35 @@ public interface StudentMapper {
     // --- De Dominio a Entidad JPA ---
     @Mapping(source = "accountId.value", target = "userId")
     @Mapping(source = "organizationId.value", target = "organizationId")
+    @Mapping(source = "studentIdNumber", target = "studentIdNumber")
+    @Mapping(source = "enrollmentDate", target = "enrollmentDate")
+    @Mapping(source = "currentGradeLevel", target = "currentGradeLevel")
+    // REMOVIDO: observations no existe en StudentProfileJpaEntity
     StudentProfileJpaEntity toJpa(Student student);
 
     // --- De Entidad JPA a Dominio ---
-    @Mapping(source = "userId", target = "accountId", qualifiedByName = "longToAccountId")
-    @Mapping(source = "organizationId", target = "organizationId", qualifiedByName = "longToOrganizationId")
-    Student toDomain(StudentProfileJpaEntity jpaEntity);
+    // NOTA: Student tiene campos final, usamos método custom
+    default Student toDomain(StudentProfileJpaEntity jpaEntity) {
+        if (jpaEntity == null) {
+            return null;
+        }
 
-    // --- Métodos Helper ---
-    @Named("longToAccountId")
-    default AccountId longToAccountId(Long id) {
-        return id == null ? null : new AccountId(id);
-    }
+        AccountId accountId = jpaEntity.getUserId() != null ? new AccountId(jpaEntity.getUserId()) : null;
+        OrganizationId organizationId = jpaEntity.getOrganizationId() != null ? new OrganizationId(jpaEntity.getOrganizationId()) : null;
 
-    @Named("longToOrganizationId")
-    default OrganizationId longToOrganizationId(Long id) {
-        return id == null ? null : new OrganizationId(id);
+        // Crear Student usando el constructor existente
+        Student student = new Student(
+                accountId,
+                organizationId,
+                jpaEntity.getStudentIdNumber(),
+                jpaEntity.getEnrollmentDate()
+        );
+
+        // Setear currentGradeLevel usando el método del dominio
+        if (jpaEntity.getCurrentGradeLevel() != null) {
+            student.changeGradeLevel(jpaEntity.getCurrentGradeLevel());
+        }
+
+        return student;
     }
 }

@@ -8,30 +8,11 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-08-03T17:56:56-0500",
+    date = "2025-08-04T20:26:56-0500",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 21.0.7 (Amazon.com Inc.)"
 )
 @Component
 public class OrganizationMapperImpl implements OrganizationMapper {
-
-    @Override
-    public Organization toDomain(OrganizationJpaEntity jpaEntity) {
-        if ( jpaEntity == null ) {
-            return null;
-        }
-
-        OrganizationId id = null;
-        String name = null;
-
-        id = longToOrganizationId( jpaEntity.getId() );
-        name = jpaEntity.getName();
-
-        int consentAge = 0;
-
-        Organization organization = new Organization( id, name, consentAge );
-
-        return organization;
-    }
 
     @Override
     public OrganizationJpaEntity toJpa(Organization organization) {
@@ -43,8 +24,9 @@ public class OrganizationMapperImpl implements OrganizationMapper {
 
         organizationJpaEntity.setId( organizationIdValue( organization ) );
         organizationJpaEntity.setName( organization.getName() );
-        organizationJpaEntity.setActive( organization.isActive() );
+        organizationJpaEntity.setSubdomain( organization.getSubdomain() );
         organizationJpaEntity.setDigitalConsentAge( organization.getDigitalConsentAge() );
+        organizationJpaEntity.setActive( organization.isActive() );
 
         return organizationJpaEntity;
     }

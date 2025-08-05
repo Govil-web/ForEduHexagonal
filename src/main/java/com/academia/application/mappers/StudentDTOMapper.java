@@ -13,7 +13,6 @@ public interface StudentDTOMapper {
     StudentDTOMapper INSTANCE = Mappers.getMapper(StudentDTOMapper.class);
 
     @Mapping(source = "userAccount.user.id.value", target = "accountId")
-    // CORRECCIÓN: La expresión ahora llama al método getFullName() del Value Object 'Name'
     @Mapping(expression = "java(userAccount.getUser().getName().getFullName())", target = "fullName")
     @Mapping(source = "userAccount.user.email.value", target = "email")
     @Mapping(expression = "java(userAccount.getUser().getAge())", target = "age")
@@ -21,6 +20,6 @@ public interface StudentDTOMapper {
     @Mapping(source = "student.currentGradeLevel", target = "currentGradeLevel")
     @Mapping(source = "student.enrollmentDate", target = "enrollmentDate")
     @Mapping(source = "userAccount.user.accountStatus", target = "accountStatus")
-    @Mapping(target = "guardians", ignore = true)
+    @Mapping(target = "guardians", ignore = true) // Los guardians se mapean por separado
     StudentDetailsDTO toDTO(UserAccount userAccount, Student student);
 }

@@ -14,38 +14,11 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-08-03T17:56:56-0500",
+    date = "2025-08-04T20:26:56-0500",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 21.0.7 (Amazon.com Inc.)"
 )
 @Component
 public class UserAccountMapperImpl implements UserAccountMapper {
-
-    @Override
-    public User toDomain(UserJpaEntity entity) {
-        if ( entity == null ) {
-            return null;
-        }
-
-        AccountId id = null;
-        OrganizationId organizationId = null;
-        Name name = null;
-        Email email = null;
-        LocalDate birthDate = null;
-        String passwordHash = null;
-
-        id = userJpaEntityToAccountId( entity );
-        organizationId = userJpaEntityToOrganizationId( entity );
-        name = userJpaEntityToName( entity );
-        email = userJpaEntityToEmail( entity );
-        birthDate = entity.getBirthDate();
-        passwordHash = entity.getPasswordHash();
-
-        AccountStatus status = null;
-
-        User user = new User( id, organizationId, name, email, birthDate, passwordHash, status );
-
-        return user;
-    }
 
     @Override
     public UserJpaEntity toJpa(UserAccount aggregate) {
@@ -60,66 +33,11 @@ public class UserAccountMapperImpl implements UserAccountMapper {
         userJpaEntity.setFirstName( aggregateUserNameFirstName( aggregate ) );
         userJpaEntity.setLastName( aggregateUserNameLastName( aggregate ) );
         userJpaEntity.setEmail( aggregateUserEmailValue( aggregate ) );
+        userJpaEntity.setPasswordHash( aggregateUserPasswordHash( aggregate ) );
+        userJpaEntity.setBirthDate( aggregateUserBirthDate( aggregate ) );
+        userJpaEntity.setAccountStatus( aggregateUserAccountStatus( aggregate ) );
 
         return userJpaEntity;
-    }
-
-    protected AccountId userJpaEntityToAccountId(UserJpaEntity userJpaEntity) {
-        if ( userJpaEntity == null ) {
-            return null;
-        }
-
-        Long value = null;
-
-        value = userJpaEntity.getId();
-
-        AccountId accountId = new AccountId( value );
-
-        return accountId;
-    }
-
-    protected OrganizationId userJpaEntityToOrganizationId(UserJpaEntity userJpaEntity) {
-        if ( userJpaEntity == null ) {
-            return null;
-        }
-
-        Long value = null;
-
-        value = userJpaEntity.getOrganizationId();
-
-        OrganizationId organizationId = new OrganizationId( value );
-
-        return organizationId;
-    }
-
-    protected Name userJpaEntityToName(UserJpaEntity userJpaEntity) {
-        if ( userJpaEntity == null ) {
-            return null;
-        }
-
-        String firstName = null;
-        String lastName = null;
-
-        firstName = userJpaEntity.getFirstName();
-        lastName = userJpaEntity.getLastName();
-
-        Name name = new Name( firstName, lastName );
-
-        return name;
-    }
-
-    protected Email userJpaEntityToEmail(UserJpaEntity userJpaEntity) {
-        if ( userJpaEntity == null ) {
-            return null;
-        }
-
-        String value = null;
-
-        value = userJpaEntity.getEmail();
-
-        Email email = new Email( value );
-
-        return email;
     }
 
     private Long aggregateUserIdValue(UserAccount userAccount) {
@@ -215,5 +133,50 @@ public class UserAccountMapperImpl implements UserAccountMapper {
             return null;
         }
         return value;
+    }
+
+    private String aggregateUserPasswordHash(UserAccount userAccount) {
+        if ( userAccount == null ) {
+            return null;
+        }
+        User user = userAccount.getUser();
+        if ( user == null ) {
+            return null;
+        }
+        String passwordHash = user.getPasswordHash();
+        if ( passwordHash == null ) {
+            return null;
+        }
+        return passwordHash;
+    }
+
+    private LocalDate aggregateUserBirthDate(UserAccount userAccount) {
+        if ( userAccount == null ) {
+            return null;
+        }
+        User user = userAccount.getUser();
+        if ( user == null ) {
+            return null;
+        }
+        LocalDate birthDate = user.getBirthDate();
+        if ( birthDate == null ) {
+            return null;
+        }
+        return birthDate;
+    }
+
+    private AccountStatus aggregateUserAccountStatus(UserAccount userAccount) {
+        if ( userAccount == null ) {
+            return null;
+        }
+        User user = userAccount.getUser();
+        if ( user == null ) {
+            return null;
+        }
+        AccountStatus accountStatus = user.getAccountStatus();
+        if ( accountStatus == null ) {
+            return null;
+        }
+        return accountStatus;
     }
 }
