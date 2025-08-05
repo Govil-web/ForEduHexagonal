@@ -1,0 +1,67 @@
+# #################### #
+# Archivos de Logs     #
+# #################### #
+# Ignorar el directorio de logs completo
+/logs/
+# Ignorar archivos de log individuales que puedan quedar fuera del directorio
+*.log
+# Ignorar archivos de log comprimidos
+*.gz
+
+# #################### #
+# Dependencias y Build #
+# #################### #
+# Directorio de salida de Maven
+/target/
+
+# Paquetes de dependencias de Maven
+.mvn/
+*.jar
+*.war
+*.ear
+
+# #################### #
+# Archivos de IDE      #
+# #################### #
+# IntelliJ
+.idea/
+*.iml
+*.iws
+
+# Eclipse
+.classpath
+.project
+.settings/
+.springBeans
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+.nb-gradle/
+
+# VS Code
+.vscode/
+
+# #################### #
+# Archivos de SO       #
+# #################### #
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+
+# #################### #
+# Archivos Temporales  #
+# #################### #
+*~
+*.swp
+*.tmp
+.env

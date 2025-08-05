@@ -4,7 +4,7 @@
 -- =================================================================
 
 -- -----------------------------------------------------
--- OBTENER IDs DEL CONTEXTO DE V2 
+-- OBTENER IDs DEL CONTEXTO DE V2
 -- -----------------------------------------------------
 SET @course_primaria_id = (SELECT id FROM courses WHERE course_code = 'MAT3-2025');
 -- CORRECCIÓN: Se especifica e.id para evitar ambigüedad.

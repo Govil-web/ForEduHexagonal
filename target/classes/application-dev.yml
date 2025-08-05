@@ -5,9 +5,9 @@
 spring:
   # Conexión a la base de datos local de desarrollo
   datasource:
-    url: jdbc:mysql://mysqlforstudent.mysql.database.azure.com:3306/foredu_new
-    username: adminuser
-    password: YourStrongPassword123!
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     show-sql: true # Muestra las queries SQL en la consola
@@ -36,5 +36,5 @@ logging:
 
 # Configuración JWT para desarrollo
 jwt:
-  secret: "clave-secreta-muy-larga-y-segura-para-el-entorno-de-desarrollo"
-  expiration: 86400000 # 24 horas
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION}
