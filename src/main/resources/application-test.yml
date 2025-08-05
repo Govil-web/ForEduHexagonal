@@ -33,9 +33,18 @@ spring:
   jwt:
     secret: "clave-secreta-fija-para-pruebas-automatizadas-no-usar-en-otro-lugar"
     expiration: 60000 # 1 minuto, para probar también la expiración si es necesario.
+    access-token-expiration: 60000 # 1 minuto para pruebas rápidas
+    refresh-token-expiration: 300000 # 5 minutos
 
 # Logging para pruebas: Silencioso para no saturar la salida. Solo mostrar errores.
 logging:
   level:
     root: ERROR
     com.academia: INFO # Podemos ver logs de nuestra app si es necesario.
+
+app:
+  auth:
+    max-login-attempts: 100 # Sin límites en pruebas
+    login-attempt-window-minutes: 60
+  security:
+    allowed-origins: "*"

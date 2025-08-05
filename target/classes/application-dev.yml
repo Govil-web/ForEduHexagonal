@@ -38,3 +38,12 @@ logging:
 jwt:
   secret: ${JWT_SECRET}
   expiration: ${JWT_EXPIRATION}
+  refresh-token-expiration: 604800000
+
+app:
+  auth:
+    max-login-attempts: 10 # Más permisivo en desarrollo
+    login-attempt-window-minutes: 5
+  security:
+    allowed-origins: "http://localhost:3000,http://localhost:8080,http://localhost:4200"
+

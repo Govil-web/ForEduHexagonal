@@ -19,7 +19,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/organizations")
+@RequestMapping("/organizations")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Organizations", description = "API para gestión de organizaciones")

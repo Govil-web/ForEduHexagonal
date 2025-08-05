@@ -35,6 +35,16 @@ public class JpaOrganizationRepositoryAdapter implements OrganizationRepository 
         return jpaRepository.findById(id.getValue()).map(mapper::toDomain);
     }
 
+    @Override
+    public Optional<Organization> findBySubdomain(String subdomain) {
+        return jpaRepository.findBySubdomain(subdomain).map(mapper::toDomain);
+    }
+
+    @Override
+    public boolean existsBySubdomain(String subdomain) {
+        return false;
+    }
+
     private String generateSubdomainFromName(String name) {
         if (name == null) return "org";
         return name.toLowerCase()

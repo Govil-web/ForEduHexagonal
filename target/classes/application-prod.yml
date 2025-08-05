@@ -42,3 +42,16 @@ logging:
 jwt:
   secret: ${JWT_SECRET} # ¡NUNCA hardcodear esto!
   expiration: 3600000 # 1 hora
+  access-token-expiration: ${JWT_ACCESS_TOKEN_EXPIRATION:900000} # 15 minutos
+  refresh-token-expiration: ${JWT_REFRESH_TOKEN_EXPIRATION:604800000} # 7 días
+
+app:
+  auth:
+    max-login-attempts: ${AUTH_MAX_LOGIN_ATTEMPTS:3}
+    login-attempt-window-minutes: ${AUTH_LOGIN_ATTEMPT_WINDOW:1}
+  security:
+    allowed-origins: ${ALLOWED_ORIGINS} # Variable de entorno obligatoria
+    max-session-duration-minutes: ${MAX_SESSION_DURATION:240} # 4 horas
+
+
+
