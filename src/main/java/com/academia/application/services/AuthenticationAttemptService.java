@@ -19,7 +19,6 @@ public class AuthenticationAttemptService {
     private final int maxAttempts;
     private final int attemptWindowMinutes;
 
-    // Cache en memoria para demo - en producción usar Redis
     private final ConcurrentMap<String, AttemptInfo> attemptCache = new ConcurrentHashMap<>();
 
     public AuthenticationAttemptService(

@@ -21,8 +21,15 @@ public record LoginRequest(
         @Schema(description = "Contraseña del usuario", example = "AdminPass123")
         String password,
 
-        @NotBlank(message = "El subdominio de la organización es obligatorio")
+        //@NotBlank(message = "El subdominio de la organización es obligatorio")
         @Size(min = 3, max = 50, message = "El subdominio debe tener entre 3 y 50 caracteres")
         @Schema(description = "Subdominio de la organización", example = "unitecfuturo")
         String organizationSubdomain
-) {}
+) {
+        public LoginRequest {
+                // Para usuarios que no son del sistema, organizationSubdomain es requerido
+                if (organizationSubdomain == null && !email.endsWith("@plataforma.com")) {
+                        throw new IllegalArgumentException("El subdominio de la organización es obligatorio para usuarios de organizaciones");
+                }
+        }
+}

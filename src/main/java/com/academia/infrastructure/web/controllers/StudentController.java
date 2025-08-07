@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 public class StudentController {
 
     private final RegisterNewStudentUseCase registerNewStudentUseCase;
-    private final RegisterStudentRequestMapper requestMapper; // Spring ahora puede inyectar esto
+    private final RegisterStudentRequestMapper requestMapper;
 
     @PostMapping("/register")
     public ResponseEntity<StudentDetailsDTO> registerStudent(@Valid @RequestBody RegisterStudentRequest request) {

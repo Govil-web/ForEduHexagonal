@@ -1,8 +1,11 @@
 package com.academia.application.exceptions;
 
+import lombok.Getter;
+
 /**
  * Excepción lanzada cuando se excede el límite de intentos de autenticación.
  */
+@Getter
 public class RateLimitExceededException extends RuntimeException {
 
     private final long waitTimeMinutes;
@@ -12,7 +15,4 @@ public class RateLimitExceededException extends RuntimeException {
         this.waitTimeMinutes = waitTimeMinutes;
     }
 
-    public long getWaitTimeMinutes() {
-        return waitTimeMinutes;
-    }
 }

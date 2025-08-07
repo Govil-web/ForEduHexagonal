@@ -54,7 +54,7 @@ public class SecurityConfig {
                 // Configuración de autorización
                 .authorizeHttpRequests(auth -> auth
                                 // Endpoints públicos
-                                .requestMatchers("/api/v1/auth/**").permitAll()
+                                .requestMatchers("/auth/**").permitAll()
 // Swagger UI endpoints
                                 .requestMatchers("/swagger-ui/**").permitAll()
                                 .requestMatchers("/swagger-ui.html").permitAll()
@@ -66,16 +66,16 @@ public class SecurityConfig {
                                 .requestMatchers("/").permitAll()
 
                         // Endpoints de sistema (solo SYSTEM_ADMIN)
-                        .requestMatchers(HttpMethod.POST, "/api/v1/organizations").hasRole("SYSTEM_ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/v1/organizations/*/admin/**").hasRole("SYSTEM_ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/organizations").hasRole("SYSTEM_ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/organizations/*/admin/**").hasRole("SYSTEM_ADMIN")
 
                         // Endpoints de organización (ORGANIZATION_ADMIN + contexto)
-                        .requestMatchers(HttpMethod.POST, "/api/v1/students/**").hasAnyRole("ORGANIZATION_ADMIN", "ACADEMIC_DIRECTOR")
-                        .requestMatchers(HttpMethod.GET, "/api/v1/students/**").hasAnyRole("ORGANIZATION_ADMIN", "ACADEMIC_DIRECTOR", "TEACHER")
+                        .requestMatchers(HttpMethod.POST, "/students/**").hasAnyRole("ORGANIZATION_ADMIN", "ACADEMIC_DIRECTOR")
+                        .requestMatchers(HttpMethod.GET, "/students/**").hasAnyRole("ORGANIZATION_ADMIN", "ACADEMIC_DIRECTOR", "TEACHER")
 
                         // Endpoints de cursos (TEACHER + contexto)
-                        .requestMatchers(HttpMethod.POST, "/api/v1/courses/*/enroll").hasAnyRole("ORGANIZATION_ADMIN", "ACADEMIC_DIRECTOR")
-                        .requestMatchers(HttpMethod.GET, "/api/v1/courses/**").hasAnyRole("ORGANIZATION_ADMIN", "ACADEMIC_DIRECTOR", "TEACHER", "STUDENT")
+                        .requestMatchers(HttpMethod.POST, "/courses/*/enroll").hasAnyRole("ORGANIZATION_ADMIN", "ACADEMIC_DIRECTOR")
+                        .requestMatchers(HttpMethod.GET, "/courses/**").hasAnyRole("ORGANIZATION_ADMIN", "ACADEMIC_DIRECTOR", "TEACHER", "STUDENT")
 
                         // Cualquier otra petición requiere autenticación
                         .anyRequest().authenticated()

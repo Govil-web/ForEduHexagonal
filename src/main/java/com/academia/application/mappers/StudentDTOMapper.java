@@ -20,6 +20,6 @@ public interface StudentDTOMapper {
     @Mapping(source = "student.currentGradeLevel", target = "currentGradeLevel")
     @Mapping(source = "student.enrollmentDate", target = "enrollmentDate")
     @Mapping(source = "userAccount.user.accountStatus", target = "accountStatus")
-    @Mapping(target = "guardians", ignore = true) // Los guardians se mapean por separado
+    @Mapping(target = "guardians", ignore = true)
     StudentDetailsDTO toDTO(UserAccount userAccount, Student student);
 }
