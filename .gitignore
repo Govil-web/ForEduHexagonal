@@ -13,6 +13,7 @@
 # #################### #
 # Directorio de salida de Maven
 /target/
+target
 
 # Paquetes de dependencias de Maven
 .mvn/
