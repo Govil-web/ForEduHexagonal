@@ -3,11 +3,11 @@ package com.academia.domain.ports.in.commands;
 
 /**
  * Comando inmutable que representa la intención de autenticar un usuario.
+ * Versión optimizada que no requiere el subdominio de la organización.
  */
 public record LoginCommand(
         String email,
-        String password,
-        String organizationSubdomain // Para multi-tenancy
+        String password
 ) {
     public LoginCommand {
         if (email == null || email.isBlank()) {
@@ -15,9 +15,6 @@ public record LoginCommand(
         }
         if (password == null || password.isBlank()) {
             throw new IllegalArgumentException("La contraseña no puede estar vacía");
-        }
-        if (organizationSubdomain == null || organizationSubdomain.isBlank()) {
-            throw new IllegalArgumentException("El subdominio de la organización no puede estar vacío");
         }
     }
 }

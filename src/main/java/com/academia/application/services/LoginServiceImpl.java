@@ -6,6 +6,7 @@ import com.academia.domain.model.aggregates.UserAccount;
 import com.academia.domain.model.entities.Role;
 import com.academia.domain.model.entities.User;
 import com.academia.domain.model.enums.AccountStatus;
+import com.academia.domain.model.valueobjects.ids.OrganizationId;
 import com.academia.domain.model.valueobjects.user.Email;
 import com.academia.domain.ports.in.auth.LoginUseCase;
 import com.academia.domain.ports.in.commands.LoginCommand;
@@ -28,6 +29,7 @@ public class LoginServiceImpl implements LoginUseCase {
 
     private final OrganizationRepository organizationRepository;
     private final UserAccountRepository userAccountRepository;
+    private final EmailOrganizationIndexRepository emailIndexRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
@@ -37,10 +39,9 @@ public class LoginServiceImpl implements LoginUseCase {
     @Override
     @Transactional
     public AuthenticationResponseDTO login(LoginCommand command) {
-        log.info("Intento de login para email: {} en organización: {}",
-                command.email(), command.organizationSubdomain());
+        log.info("Intento de login para email: {}", command.email());
 
-        String identifier = command.email() + "@" + command.organizationSubdomain();
+        String identifier = command.email(); // Identificador simplificado para rate limiting
 
         // 1. Verificar rate limiting
         if (attemptService.isBlocked(identifier)) {
@@ -52,51 +53,55 @@ public class LoginServiceImpl implements LoginUseCase {
         }
 
         try {
-            // 2. Buscar organización por subdominio
-            Organization organization = findOrganizationBySubdomain(command.organizationSubdomain());
+            // 2. Buscar organización por email
+            Email email = new Email(command.email());
+            OrganizationId organizationId = findOrganizationByEmail(email);
+            
+            // 3. Buscar organización por ID
+            Organization organization = organizationRepository.findById(organizationId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Organización no encontrada para ID: " + organizationId.getValue()));
             organizationContextService.validateOrganizationIsActive(organization);
 
-            // 3. Buscar usuario por email dentro de la organización
-            Email email = new Email(command.email());
-            UserAccount userAccount = userAccountRepository.findByEmail(organization.getId(), email)
+            // 4. Buscar usuario por email dentro de la organización
+            UserAccount userAccount = userAccountRepository.findByEmail(organizationId, email)
                     .orElseThrow(() -> new IllegalArgumentException("Credenciales inválidas"));
 
             User user = userAccount.getUser();
 
-            // 4. Validar contexto organizacional
-            if (!organizationContextService.userBelongsToOrganization(user, organization.getId())) {
+            // 5. Validar contexto organizacional
+            if (!organizationContextService.userBelongsToOrganization(user, organizationId)) {
                 throw new IllegalArgumentException("Usuario no pertenece a esta organización");
             }
 
-            // 5. Validar contraseña
+            // 6. Validar contraseña
             if (!passwordEncoder.matches(command.password(), user.getPasswordHash())) {
                 log.warn("Contraseña incorrecta para usuario: {}", command.email());
                 attemptService.recordFailedAttempt(identifier);
                 throw new IllegalArgumentException("Credenciales inválidas");
             }
 
-            // 6. Validar estado de la cuenta
+            // 7. Validar estado de la cuenta
             validateAccountStatus(user);
 
-            // 7. Limpiar intentos fallidos tras login exitoso
+            // 8. Limpiar intentos fallidos tras login exitoso
             attemptService.clearFailedAttempts(identifier);
 
-            // 8. Generar tokens
-            String accessToken = jwtTokenProvider.generateAccessToken(userAccount, command.organizationSubdomain());
+            // 9. Generar tokens
+            String accessToken = jwtTokenProvider.generateAccessToken(userAccount, organization.getSubdomain());
             String refreshToken = jwtTokenProvider.generateRefreshToken(userAccount);
 
-            // 9. Guardar refresh token
+            // 10. Guardar refresh token
             refreshTokenRepository.saveRefreshToken(
                     refreshToken,
                     user.getId(),
                     jwtTokenProvider.getRefreshTokenExpiration().atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli()
             );
 
-            // 10. Construir respuesta
+            // 11. Construir respuesta
             AuthenticationResponseDTO.UserAuthInfoDTO userInfo = buildUserAuthInfo(user, organization);
 
             log.info("Login exitoso para usuario: {} en organización: {}",
-                    command.email(), command.organizationSubdomain());
+                    command.email(), organization.getSubdomain());
 
             return new AuthenticationResponseDTO(
                     accessToken,
@@ -115,13 +120,17 @@ public class LoginServiceImpl implements LoginUseCase {
         }
     }
 
-    private Organization findOrganizationBySubdomain(String subdomain) {
-        log.debug("Buscando organización por subdominio: {}", subdomain);
-        Organization organization = organizationRepository.findBySubdomain(subdomain)
-                .orElseThrow(() -> new ResourceNotFoundException("Organización no encontrada para subdominio: " + subdomain));
-
-        organizationContextService.validateOrganizationIsActive(organization);
-        return organization;
+    /**
+     * Busca la organización asociada a un email utilizando el índice global de emails.
+     * 
+     * @param email El email a buscar
+     * @return El ID de la organización asociada al email
+     * @throws ResourceNotFoundException si no se encuentra ninguna organización para el email
+     */
+    private OrganizationId findOrganizationByEmail(Email email) {
+        log.debug("Buscando organización por email: {}", email.value());
+        return emailIndexRepository.findOrganizationByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("No se encontró ninguna organización para el email: " + email.value()));
     }
 
     private void validateAccountStatus(User user) {

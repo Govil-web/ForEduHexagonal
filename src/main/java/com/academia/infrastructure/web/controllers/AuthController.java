@@ -48,8 +48,7 @@ public class AuthController {
             @ApiResponse(responseCode = "403", description = "Cuenta suspendida o no puede autenticarse")
     })
     public ResponseEntity<AuthenticationResponseDTO> login(@Valid @RequestBody LoginRequest request) {
-        log.info("Solicitud de login para email: {} en organización: {}",
-                request.email(), request.organizationSubdomain());
+        log.info("Solicitud de login para email: {}", request.email());
 
         try {
             LoginCommand command = requestMapper.toLoginCommand(request);

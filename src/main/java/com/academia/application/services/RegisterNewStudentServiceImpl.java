@@ -16,6 +16,7 @@ import com.academia.domain.ports.in.dtos.StudentDetailsDTO;
 import com.academia.domain.ports.in.student.RegisterNewStudentUseCase;
 import com.academia.domain.ports.out.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
@@ -23,11 +24,13 @@ import java.time.Period;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class RegisterNewStudentServiceImpl implements RegisterNewStudentUseCase {
 
     private final OrganizationRepository organizationRepository;
     private final UserAccountRepository userAccountRepository;
     private final StudentRepository studentRepository;
+    private final EmailOrganizationIndexRepository emailIndexRepository;
     private final DomainEventPublisher domainEventPublisher;
     private final StudentDTOMapper studentDTOMapper;
 
@@ -39,9 +42,11 @@ public class RegisterNewStudentServiceImpl implements RegisterNewStudentUseCase 
                 .orElseThrow(() -> new ResourceNotFoundException("Organización no encontrada con ID: " + orgId.getValue()));
 
         Email email = new Email(command.email());
-        if (userAccountRepository.existsByEmail(orgId, email)) {
-            throw new IllegalArgumentException("El email '" + email.value() + "' ya está en uso en esta organización.");
-        }
+        
+        // Validar email globalmente
+        validateEmailAvailability(email);
+        
+        // Validar legajo en la organización
         if (studentRepository.existsByStudentIdNumber(orgId, command.studentIdNumber())) {
             throw new IllegalArgumentException("El legajo '" + command.studentIdNumber() + "' ya está en uso en esta organización.");
         }
@@ -59,6 +64,13 @@ public class RegisterNewStudentServiceImpl implements RegisterNewStudentUseCase 
 
         UserAccount savedUserAccount = userAccountRepository.save(userAccount);
         AccountId newAccountId = savedUserAccount.getUser().getId();
+        
+        // Registrar email en el índice global
+        emailIndexRepository.registerEmail(
+                email, 
+                orgId, 
+                savedUserAccount.getUser().getId().getValue()
+        );
 
         Student student = new Student(newAccountId, orgId, command.studentIdNumber(), command.enrollmentDate());
         student.changeGradeLevel(command.initialGradeLevel());
@@ -66,6 +78,26 @@ public class RegisterNewStudentServiceImpl implements RegisterNewStudentUseCase 
 
         domainEventPublisher.publish(savedUserAccount.getDomainEvents());
 
+        log.info("Estudiante registrado exitosamente: {} con ID: {} en organización: {}", 
+                email.value(), newAccountId.getValue(), orgId.getValue());
+
         return studentDTOMapper.toDTO(savedUserAccount, savedStudent);
+    }
+    
+    /**
+     * Valida que el email esté disponible globalmente.
+     * 
+     * @param email El email a validar
+     * @throws IllegalArgumentException si el email ya está registrado en cualquier organización
+     */
+    private void validateEmailAvailability(Email email) {
+        log.debug("Validando disponibilidad global del email: {}", email.value());
+        
+        if (emailIndexRepository.emailExistsGlobally(email)) {
+            log.warn("El email {} ya está registrado en el sistema", email.value());
+            throw new IllegalArgumentException("El email '" + email.value() + "' ya está registrado. Por favor, utilice otro email.");
+        }
+        
+        log.debug("Email {} disponible para registro", email.value());
     }
 }

@@ -14,6 +14,7 @@ import com.academia.domain.ports.in.commands.CreateOrganizationCommand;
 import com.academia.domain.ports.in.dtos.OrganizationDetailsDTO;
 import com.academia.domain.ports.in.organization.CreateOrganizationUseCase;
 import com.academia.domain.ports.out.DomainEventPublisher;
+import com.academia.domain.ports.out.EmailOrganizationIndexRepository;
 import com.academia.domain.ports.out.OrganizationRepository;
 import com.academia.domain.ports.out.UserAccountRepository;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,7 @@ public class CreateOrganizationServiceImpl implements CreateOrganizationUseCase 
 
     private final OrganizationRepository organizationRepository;
     private final UserAccountRepository userAccountRepository;
+    private final EmailOrganizationIndexRepository emailIndexRepository;
     private final DomainEventPublisher domainEventPublisher;
     private final PasswordEncoder passwordEncoder;
 
@@ -59,6 +61,13 @@ public class CreateOrganizationServiceImpl implements CreateOrganizationUseCase 
         // Crear y guardar el administrador
         UserAccount adminUserAccount = buildAdminUserAccount(command, organizationId);
         UserAccount savedAdminAccount = userAccountRepository.save(adminUserAccount);
+        
+        // Registrar el email en el índice global
+        emailIndexRepository.registerEmail(
+                adminEmail, 
+                organizationId, 
+                savedAdminAccount.getUser().getId().getValue()
+        );
 
         // Publicar eventos de dominio
         domainEventPublisher.publish(savedAdminAccount.getDomainEvents());
@@ -128,28 +137,20 @@ public class CreateOrganizationServiceImpl implements CreateOrganizationUseCase 
     }
 
     /**
-     * Valida que el email del administrador esté disponible.
+     * Valida que el email del administrador esté disponible globalmente.
      * 
      * @param email El email a validar
-     * @throws ResourceNotFoundException si el email ya está registrado
+     * @throws IllegalArgumentException si el email ya está registrado en cualquier organización
      */
     private void validateAdminEmailAvailability(Email email) {
-        log.debug("Validando disponibilidad del email de administrador: {}", email.value());
+        log.debug("Validando disponibilidad global del email de administrador: {}", email.value());
         
-        // Como estamos creando una nueva organización, no tenemos un OrganizationId específico para verificar
-        // En un escenario real, podríamos tener un método en el repositorio para verificar globalmente
-        // o consultar todas las organizaciones y verificar en cada una
+        if (emailIndexRepository.emailExistsGlobally(email)) {
+            log.warn("El email {} ya está registrado en el sistema", email.value());
+            throw new IllegalArgumentException("El email '" + email.value() + "' ya está registrado. Por favor, utilice otro email.");
+        }
         
-        // Implementación simplificada: asumimos que el email está disponible
-        // En una implementación real, se debería verificar en todas las organizaciones
-        log.warn("Validación de email global no implementada completamente. Se asume que el email está disponible.");
-        
-        // Alternativa: si tuviéramos un método para obtener todas las organizaciones
-        // organizationRepository.findAll().forEach(org -> {
-        //     if (userAccountRepository.existsByEmail(org.getId(), email)) {
-        //         throw new ResourceNotFoundException("El email '" + email.value() + "' ya está registrado. Por favor, utilice otro email.");
-        //     }
-        // });
+        log.debug("Email {} disponible para registro", email.value());
     }
 
     // Constantes para los roles

@@ -19,6 +19,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.hamcrest.Matchers.not;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -55,8 +56,7 @@ class AuthControllerIntegrationTest {
         // Arrange
         LoginRequest request = new LoginRequest(
                 "", // Email vacío
-                "password123",
-                "unifuturo"
+                "password123"
         );
 
         // Act & Assert
@@ -72,8 +72,7 @@ class AuthControllerIntegrationTest {
         // Arrange
         LoginRequest request = new LoginRequest(
                 "email-invalido", // Email sin formato válido
-                "password123",
-                "unifuturo"
+                "password123"
         );
 
         // Act & Assert
@@ -89,8 +88,7 @@ class AuthControllerIntegrationTest {
         // Arrange
         LoginRequest request = new LoginRequest(
                 "user@test.com",
-                "123", // Contraseña muy corta
-                "unifuturo"
+                "123" // Contraseña muy corta
         );
 
         // Act & Assert
@@ -138,8 +136,7 @@ class AuthControllerIntegrationTest {
         // Arrange
         LoginRequest loginRequest = new LoginRequest(
                 "test@example.com",
-                "password123",
-                "testorg"
+                "password123"
         );
 
         // Act & Assert - Los endpoints no deberían devolver 401 Unauthorized
@@ -147,12 +144,12 @@ class AuthControllerIntegrationTest {
         mockMvc.perform(post("/api/v1/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginRequest)))
-                .andExpect(status().isNot(401)); // No debe ser Unauthorized
+                .andExpect(status().is(not(401))); // No debe ser Unauthorized
 
         RefreshTokenRequest refreshRequest = new RefreshTokenRequest("fake.token");
         mockMvc.perform(post("/api/v1/auth/refresh")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(refreshRequest)))
-                .andExpect(status().isNot(401)); // No debe ser Unauthorized
+                .andExpect(status().is(not(401))); // No debe ser Unauthorized
     }
 }
