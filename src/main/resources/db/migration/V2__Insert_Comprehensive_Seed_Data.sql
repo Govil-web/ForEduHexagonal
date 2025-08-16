@@ -1,10 +1,10 @@
 -- =================================================================
--- MIGRACIÓN V2: DATOS DE PRUEBA COMPLETOS Y FUNCIONALES
--- Crea un ecosistema básico y coherente para cada organización.
+-- MIGRACIÓN V2: DATOS DE PRUEBA COHERENTES Y FUNCIONALES
+-- Contraseñas conocidas y documentadas para desarrollo
 -- =================================================================
 
 -- -----------------------------------------------------
--- Roles del Sistema y de Tenant (Sin cambios)
+-- Roles del sistema
 -- -----------------------------------------------------
 INSERT INTO roles (id, name, scope) VALUES
                                         (1, 'SYSTEM_ADMIN', 'SYSTEM'),
@@ -15,90 +15,186 @@ INSERT INTO roles (id, name, scope) VALUES
                                         (6, 'GUARDIAN', 'TENANT');
 
 -- -----------------------------------------------------
--- Super User (Administrador de la Plataforma) (Sin cambios)
--- Pass: superadmin123
+-- SUPER ADMIN (Sistema)
+-- Email: superadmin@plataforma.com
+-- Contraseña: 123456789
+-- Hash: $2a$10$I0gnxgl3zHLeuDQWurpwce8/rvcwOAjCM0kOlVazBv9WVbrReovq6
 -- -----------------------------------------------------
-INSERT INTO users (id, organization_id, first_name, last_name, email, password_hash, birth_date, account_status) VALUES
-    (1, NULL, 'Plataforma', 'Admin', 'superadmin@plataforma.com', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVEFDa', '1990-01-01', 'ACTIVE');
+INSERT INTO users (id, organization_id, first_name, last_name, email, password_hash, birth_date, account_status)
+VALUES (1, NULL, 'Super', 'Admin', 'superadmin@plataforma.com',
+        '$2a$10$I0gnxgl3zHLeuDQWurpwce8/rvcwOAjCM0kOlVazBv9WVbrReovq6',
+        '1985-01-01', 'ACTIVE');
+
 INSERT INTO user_roles (user_id, role_id) VALUES (1, 1);
 
+-- =====================================================
+-- ORGANIZACIÓN 1: "Universidad del Futuro"
+-- =====================================================
+INSERT INTO organizations (id, uuid, name, subdomain, digital_consent_age)
+VALUES (1, 'org-unifuturo-001', 'Universidad del Futuro', 'unifuturo', 16);
+
+-- ADMIN DE ORGANIZACIÓN
+-- Email: admin@unifuturo.edu
+-- Contraseña: 123456789
+INSERT INTO users (organization_id, first_name, last_name, email, password_hash, birth_date, account_status)
+VALUES (1, 'Ana', 'Directora', 'admin@unifuturo.edu',
+        '$2a$10$I0gnxgl3zHLeuDQWurpwce8/rvcwOAjCM0kOlVazBv9WVbrReovq6',
+        '1975-03-15', 'ACTIVE');
+SET @admin_unifuturo_id = LAST_INSERT_ID();
+
+INSERT INTO user_roles (user_id, role_id) VALUES (@admin_unifuturo_id, 2);
+INSERT INTO staff_profiles (user_id, title) VALUES (@admin_unifuturo_id, 'Directora General');
+
+-- PROFESOR
+-- Email: profesor@unifuturo.edu
+-- Contraseña: 123456789
+INSERT INTO users (organization_id, first_name, last_name, email, password_hash, birth_date, account_status)
+VALUES (1, 'Carlos', 'Martinez', 'profesor@unifuturo.edu',
+        '$2a$10$I0gnxgl3zHLeuDQWurpwce8/rvcwOAjCM0kOlVazBv9WVbrReovq6',
+        '1980-07-20', 'ACTIVE');
+SET @profesor_unifuturo_id = LAST_INSERT_ID();
+
+INSERT INTO user_roles (user_id, role_id) VALUES (@profesor_unifuturo_id, 4);
+INSERT INTO staff_profiles (user_id, employee_id_number, title)
+VALUES (@profesor_unifuturo_id, 'EMP-UF-001', 'Profesor de Ingeniería');
+
+-- ESTUDIANTE MAYOR DE EDAD (puede hacer login)
+-- Email: estudiante@unifuturo.edu
+-- Contraseña: 123456789
+INSERT INTO users (organization_id, first_name, last_name, email, password_hash, birth_date, account_status)
+VALUES (1, 'Sofia', 'Estudiante', 'estudiante@unifuturo.edu',
+        '$2a$10$I0gnxgl3zHLeuDQWurpwce8/rvcwOAjCM0kOlVazBv9WVbrReovq6',
+        '2007-05-10', 'ACTIVE'); -- 18 años, mayor que digital_consent_age (16)
+SET @estudiante_unifuturo_id = LAST_INSERT_ID();
+
+INSERT INTO user_roles (user_id, role_id) VALUES (@estudiante_unifuturo_id, 5);
+INSERT INTO student_profiles (user_id, organization_id, student_id_number, enrollment_date, current_grade_level)
+VALUES (@estudiante_unifuturo_id, 1, 'UF-2025-001', '2025-02-01', 'Ingeniería - Semestre 1');
 
 -- =====================================================
--- TENANT 1: Primaria "Mi Pequeño Mundo"
+-- ORGANIZACIÓN 2: "Colegio Primaria Feliz"
 -- =====================================================
-INSERT INTO organizations (id, uuid, name, subdomain, digital_consent_age) VALUES (1, UUID(), 'Primaria Mi Pequeño Mundo', 'pequenomundo', 18);
+INSERT INTO organizations (id, uuid, name, subdomain, digital_consent_age)
+VALUES (2, 'org-primaria-002', 'Colegio Primaria Feliz', 'primariafeliz', 18);
 
--- Admin de la Organización
--- Pass: adminmundo123
-INSERT INTO users (organization_id, first_name, last_name, email, password_hash, birth_date, account_status) VALUES
-    (1, 'Ana', 'Directora', 'directora.ana@pequenomundo.edu', '$2a$10$Y.aV.qCgfj4j.mCj/wJGm.U/4J4.gY5.e/3.4h5gQh/e6gQ2iV1Z.', '1980-05-10', 'ACTIVE');
-SET @admin_mundo_id = LAST_INSERT_ID();
-INSERT INTO user_roles (user_id, role_id) VALUES (@admin_mundo_id, 2);
-INSERT INTO staff_profiles (user_id, title) VALUES (@admin_mundo_id, 'Directora General');
+-- ADMIN DE ORGANIZACIÓN
+-- Email: admin@primariafeliz.edu
+-- Contraseña: 123456789
+INSERT INTO users (organization_id, first_name, last_name, email, password_hash, birth_date, account_status)
+VALUES (2, 'Laura', 'Directora', 'admin@primariafeliz.edu',
+        '$2a$10$I0gnxgl3zHLeuDQWurpwce8/rvcwOAjCM0kOlVazBv9WVbrReovq6',
+        '1978-09-12', 'ACTIVE');
+SET @admin_primaria_id = LAST_INSERT_ID();
 
--- **NUEVO**: Profesor para la Primaria
--- Pass: profeprimaria123
-INSERT INTO users (organization_id, first_name, last_name, email, password_hash, birth_date, account_status) VALUES
-    (1, 'Laura', 'Gomez', 'laura.gomez@pequenomundo.edu', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVEFDa', '1992-03-15', 'ACTIVE');
-SET @teacher_primaria_id = LAST_INSERT_ID();
-INSERT INTO user_roles (user_id, role_id) VALUES (@teacher_primaria_id, 4);
-INSERT INTO staff_profiles (user_id, title) VALUES (@teacher_primaria_id, 'Profesora de 3er Grado');
+INSERT INTO user_roles (user_id, role_id) VALUES (@admin_primaria_id, 2);
+INSERT INTO staff_profiles (user_id, title) VALUES (@admin_primaria_id, 'Directora');
 
--- Student MENOR de edad y su Tutor (Sin cambios)
-INSERT INTO users (organization_id, first_name, last_name, email, birth_date, account_status) VALUES (1, 'Carlos', 'Ruiz', 'carlos.ruiz@pequenomundo.edu', '2016-08-20', 'TUTOR_MANAGED');
-SET @carlos_id = LAST_INSERT_ID();
-INSERT INTO user_roles (user_id, role_id) VALUES (@carlos_id, 5);
-INSERT INTO student_profiles (user_id, organization_id, student_id_number, enrollment_date, current_grade_level) VALUES (@carlos_id, 1, 'PM-2024-001', '2024-02-01', '3er Grado');
+-- PROFESOR
+-- Email: profesor@primariafeliz.edu
+-- Contraseña: 123456789
+INSERT INTO users (organization_id, first_name, last_name, email, password_hash, birth_date, account_status)
+VALUES (2, 'Roberto', 'Profesor', 'profesor@primariafeliz.edu',
+        '$2a$10$I0gnxgl3zHLeuDQWurpwce8/rvcwOAjCM0kOlVazBv9WVbrReovq6',
+        '1985-11-03', 'ACTIVE');
+SET @profesor_primaria_id = LAST_INSERT_ID();
 
-INSERT INTO users (organization_id, first_name, last_name, email, password_hash, birth_date, account_status) VALUES (1, 'Mariana', 'Ruiz', 'mariana.ruiz@email.com', '$2a$10$Y.aV.qCgfj4j.mCj/wJGm.U/4J4.gY5.e/3.4h5gQh/e6gQ2iV1Z.', '1988-11-05', 'ACTIVE');
-SET @mariana_id = LAST_INSERT_ID();
-INSERT INTO user_roles (user_id, role_id) VALUES (@mariana_id, 6);
-INSERT INTO guardian_profiles (user_id, occupation, is_financial_responsible) VALUES (@mariana_id, 'Abogada', TRUE);
-INSERT INTO student_guardian_relationships (student_user_id, guardian_user_id, relationship_type, is_primary_contact) VALUES (@carlos_id, @mariana_id, 'Madre', TRUE);
+INSERT INTO user_roles (user_id, role_id) VALUES (@profesor_primaria_id, 4);
+INSERT INTO staff_profiles (user_id, title) VALUES (@profesor_primaria_id, 'Profesor 3er Grado');
 
--- **NUEVO**: Estructura académica para la Primaria
-INSERT INTO subjects (organization_id, name, subject_code, grade_level) VALUES (1, 'Matemáticas 3', 'MAT-3', '3er Grado');
-SET @subject_primaria_id = LAST_INSERT_ID();
-INSERT INTO academic_terms (organization_id, name, start_date, end_date) VALUES (1, 'Año Lectivo 2025', '2025-02-01', '2025-11-30');
-SET @term_primaria_id = LAST_INSERT_ID();
-INSERT INTO courses (subject_id, academic_term_id, teacher_user_id, course_code) VALUES (@subject_primaria_id, @term_primaria_id, @teacher_primaria_id, 'MAT3-2025');
-SET @course_primaria_id = LAST_INSERT_ID();
-INSERT INTO enrollments (student_user_id, course_id, status) VALUES (@carlos_id, @course_primaria_id, 'ACTIVE');
+-- TUTOR/GUARDIAN (puede hacer login)
+-- Email: tutor@email.com
+-- Contraseña: 123456789
+INSERT INTO users (organization_id, first_name, last_name, email, password_hash, birth_date, account_status)
+VALUES (2, 'Maria', 'Madre', 'tutor@email.com',
+        '$2a$10$I0gnxgl3zHLeuDQWurpwce8/rvcwOAjCM0kOlVazBv9WVbrReovq6',
+        '1985-04-18', 'ACTIVE');
+SET @tutor_id = LAST_INSERT_ID();
 
+INSERT INTO user_roles (user_id, role_id) VALUES (@tutor_id, 6);
+INSERT INTO guardian_profiles (user_id, occupation, is_financial_responsible)
+VALUES (@tutor_id, 'Ingeniera', TRUE);
+
+-- ESTUDIANTE MENOR DE EDAD (NO puede hacer login)
+-- Email: menor@primariafeliz.edu
+-- NO tiene contraseña (password_hash = NULL)
+INSERT INTO users (organization_id, first_name, last_name, email, password_hash, birth_date, account_status)
+VALUES (2, 'Pedrito', 'Menor', 'menor@primariafeliz.edu', NULL,
+        '2016-08-20', 'TUTOR_MANAGED'); -- 9 años, menor que digital_consent_age (18)
+SET @menor_id = LAST_INSERT_ID();
+
+INSERT INTO user_roles (user_id, role_id) VALUES (@menor_id, 5);
+INSERT INTO student_profiles (user_id, organization_id, student_id_number, enrollment_date, current_grade_level)
+VALUES (@menor_id, 2, 'PF-2025-001', '2025-02-01', '3er Grado');
+
+-- Relación tutor-estudiante
+INSERT INTO student_guardian_relationships (student_user_id, guardian_user_id, relationship_type, is_primary_contact)
+VALUES (@menor_id, @tutor_id, 'Madre', TRUE);
 
 -- =====================================================
--- TENANT 2: "Universidad del Futuro"
+-- ESTRUCTURA ACADÉMICA DE EJEMPLO
 -- =====================================================
-INSERT INTO organizations (id, uuid, name, subdomain, digital_consent_age) VALUES (2, UUID(), 'Universidad del Futuro', 'unifuturo', 16);
 
--- Admin de la Organización (Sin cambios)
-INSERT INTO users (organization_id, first_name, last_name, email, password_hash, birth_date, account_status) VALUES
-    (2, 'Rector', 'Morales', 'rector.morales@unifuturo.edu', '$2a$10$Y.aV.qCgfj4j.mCj/wJGm.U/4J4.gY5.e/3.4h5gQh/e6gQ2iV1Z.', '1970-01-25', 'ACTIVE');
-SET @admin_futuro_id = LAST_INSERT_ID();
-INSERT INTO user_roles (user_id, role_id) VALUES (@admin_futuro_id, 2);
-INSERT INTO staff_profiles (user_id, title) VALUES (@admin_futuro_id, 'Rector');
+-- Materias para Universidad del Futuro
+INSERT INTO subjects (organization_id, name, subject_code, grade_level)
+VALUES (1, 'Programación I', 'PROG-I', 'Ingeniería - Semestre 1');
+SET @subject_prog_id = LAST_INSERT_ID();
 
--- **NUEVO**: Profesor para la Universidad
--- Pass: profeunifuturo123
-INSERT INTO users (organization_id, first_name, last_name, email, password_hash, birth_date, account_status) VALUES
-    (2, 'Ricardo', 'Turing', 'ricardo.turing@unifuturo.edu', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVEFDa', '1985-06-12', 'ACTIVE');
-SET @teacher_uni_id = LAST_INSERT_ID();
-INSERT INTO user_roles (user_id, role_id) VALUES (@teacher_uni_id, 4);
-INSERT INTO staff_profiles (user_id, employee_id_number, hire_date, title) VALUES (@teacher_uni_id, 'EMP-UF-001', '2022-08-01', 'Profesor de Ingeniería de Software');
+-- Período académico
+INSERT INTO academic_terms (organization_id, name, start_date, end_date)
+VALUES (1, 'Semestre 2025-1', '2025-02-01', '2025-06-30');
+SET @term_unifuturo_id = LAST_INSERT_ID();
 
--- Student MAYOR de edad relativa (Sin cambios)
--- Pass: luisvega123
-INSERT INTO users (organization_id, first_name, last_name, email, password_hash, birth_date, account_status) VALUES
-    (2, 'Luis', 'Vega', 'luis.vega@unifuturo.edu', '$2a$10$Y.aV.qCgfj4j.mCj/wJGm.U/4J4.gY5.e/3.4h5gQh/e6gQ2iV1Z.', '2008-05-10', 'ACTIVE');
-SET @luis_id = LAST_INSERT_ID();
-INSERT INTO user_roles (user_id, role_id) VALUES (@luis_id, 5);
-INSERT INTO student_profiles (user_id, organization_id, student_id_number, enrollment_date, current_grade_level) VALUES (@luis_id, 2, 'UF-2025-001', '2025-02-01', 'Arquitectura - Semestre 1');
+-- Curso
+INSERT INTO courses (subject_id, academic_term_id, teacher_user_id, course_code)
+VALUES (@subject_prog_id, @term_unifuturo_id, @profesor_unifuturo_id, 'PROG-I-2025-1');
+SET @course_prog_id = LAST_INSERT_ID();
 
--- **NUEVO**: Estructura académica para la Universidad
-INSERT INTO subjects (organization_id, name, subject_code, grade_level) VALUES (2, 'Algoritmos y Estructuras de Datos', 'CS-101', 'Ingeniería de Software - Semestre 1');
-SET @subject_uni_id = LAST_INSERT_ID();
-INSERT INTO academic_terms (organization_id, name, start_date, end_date) VALUES (2, 'Semestre 2025-1', '2025-02-01', '2025-06-15');
-SET @term_uni_id = LAST_INSERT_ID();
-INSERT INTO courses (subject_id, academic_term_id, teacher_user_id, course_code) VALUES (@subject_uni_id, @term_uni_id, @teacher_uni_id, 'CS101-2025-1');
-SET @course_uni_id = LAST_INSERT_ID();
-INSERT INTO enrollments (student_user_id, course_id, status) VALUES (@luis_id, @course_uni_id, 'ACTIVE');
+-- Inscripción del estudiante
+INSERT INTO enrollments (student_user_id, course_id, status)
+VALUES (@estudiante_unifuturo_id, @course_prog_id, 'ACTIVE');
+
+-- =====================================================
+-- VERIFICACIONES Y ESTADÍSTICAS
+-- =====================================================
+
+-- Mostrar resumen de usuarios creados
+SELECT
+    'Usuarios creados' as tipo,
+    COUNT(*) as cantidad
+FROM users
+UNION ALL
+SELECT
+    'Organizaciones creadas' as tipo,
+    COUNT(*) as cantidad
+FROM organizations
+UNION ALL
+SELECT
+    'Emails en índice' as tipo,
+    COUNT(*) as cantidad
+FROM email_organization_index;
+
+-- =====================================================
+-- DOCUMENTACIÓN DE CREDENCIALES
+-- =====================================================
+
+/*
+CREDENCIALES PARA LOGIN:
+
+SUPER ADMIN:
+- Email: superadmin@plataforma.com
+- Contraseña: 123456789
+
+UNIVERSIDAD DEL FUTURO (unifuturo):
+- Admin: admin@unifuturo.edu / 123456789
+- Profesor: profesor@unifuturo.edu / 123456789
+- Estudiante: estudiante@unifuturo.edu / 123456789
+
+COLEGIO PRIMARIA FELIZ (primariafeliz):
+- Admin: admin@primariafeliz.edu / 123456789
+- Profesor: profesor@primariafeliz.edu / 123456789
+- Tutor: tutor@email.com / 123456789
+- Menor: menor@primariafeliz.edu / NO PUEDE HACER LOGIN (TUTOR_MANAGED)
+
+HASH USADO:
+- $2a$10$I0gnxgl3zHLeuDQWurpwce8/rvcwOAjCM0kOlVazBv9WVbrReovq6
+*/

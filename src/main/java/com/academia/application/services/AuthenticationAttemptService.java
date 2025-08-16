@@ -42,10 +42,8 @@ public class AuthenticationAttemptService {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime windowStart = now.minusMinutes(attemptWindowMinutes);
 
-        // Limpiar intentos fuera de la ventana de tiempo
         info.attempts.removeIf(attempt -> attempt.isBefore(windowStart));
 
-        // Agregar el nuevo intento
         info.attempts.add(now);
 
         log.warn("Usuario {} tiene {} intentos fallidos en {} minutos",

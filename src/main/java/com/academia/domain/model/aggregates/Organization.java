@@ -13,12 +13,11 @@ import java.util.Set;
 public class Organization {
     private final OrganizationId id;
     private String name;
-    private String subdomain; // AÑADIDO: para compatibilidad con la BD
+    private String subdomain;
     private int digitalConsentAge;
     private boolean isActive;
     private Set<AcademicTerm> academicTerms;
 
-    // Constructor original (mantenido para compatibilidad)
     public Organization(OrganizationId id, String name, int consentAge) {
         this.id = id;
         this.name = name;
@@ -28,7 +27,6 @@ public class Organization {
         this.academicTerms = new HashSet<>();
     }
 
-    // Constructor extendido con subdomain
     public Organization(OrganizationId id, String name, String subdomain, int consentAge) {
         this.id = id;
         this.name = name;

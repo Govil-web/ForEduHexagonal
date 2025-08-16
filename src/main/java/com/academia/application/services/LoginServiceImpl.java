@@ -41,9 +41,8 @@ public class LoginServiceImpl implements LoginUseCase {
     public AuthenticationResponseDTO login(LoginCommand command) {
         log.info("Intento de login para email: {}", command.email());
 
-        String identifier = command.email(); // Identificador simplificado para rate limiting
+        String identifier = command.email();
 
-        // 1. Verificar rate limiting
         if (attemptService.isBlocked(identifier)) {
             long remainingMinutes = attemptService.getBlockTimeRemainingMinutes(identifier);
             log.warn("Login bloqueado por rate limiting: {}. Tiempo restante: {} minutos",
@@ -53,51 +52,41 @@ public class LoginServiceImpl implements LoginUseCase {
         }
 
         try {
-            // 2. Buscar organización por email
             Email email = new Email(command.email());
             OrganizationId organizationId = findOrganizationByEmail(email);
             
-            // 3. Buscar organización por ID
             Organization organization = organizationRepository.findById(organizationId)
                     .orElseThrow(() -> new ResourceNotFoundException("Organización no encontrada para ID: " + organizationId.getValue()));
             organizationContextService.validateOrganizationIsActive(organization);
 
-            // 4. Buscar usuario por email dentro de la organización
             UserAccount userAccount = userAccountRepository.findByEmail(organizationId, email)
                     .orElseThrow(() -> new IllegalArgumentException("Credenciales inválidas"));
 
             User user = userAccount.getUser();
 
-            // 5. Validar contexto organizacional
             if (!organizationContextService.userBelongsToOrganization(user, organizationId)) {
                 throw new IllegalArgumentException("Usuario no pertenece a esta organización");
             }
 
-            // 6. Validar contraseña
             if (!passwordEncoder.matches(command.password(), user.getPasswordHash())) {
                 log.warn("Contraseña incorrecta para usuario: {}", command.email());
                 attemptService.recordFailedAttempt(identifier);
                 throw new IllegalArgumentException("Credenciales inválidas");
             }
 
-            // 7. Validar estado de la cuenta
             validateAccountStatus(user);
 
-            // 8. Limpiar intentos fallidos tras login exitoso
             attemptService.clearFailedAttempts(identifier);
 
-            // 9. Generar tokens
             String accessToken = jwtTokenProvider.generateAccessToken(userAccount, organization.getSubdomain());
             String refreshToken = jwtTokenProvider.generateRefreshToken(userAccount);
 
-            // 10. Guardar refresh token
             refreshTokenRepository.saveRefreshToken(
                     refreshToken,
                     user.getId(),
                     jwtTokenProvider.getRefreshTokenExpiration().atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli()
             );
 
-            // 11. Construir respuesta
             AuthenticationResponseDTO.UserAuthInfoDTO userInfo = buildUserAuthInfo(user, organization);
 
             log.info("Login exitoso para usuario: {} en organización: {}",
@@ -112,7 +101,6 @@ public class LoginServiceImpl implements LoginUseCase {
             );
 
         } catch (IllegalArgumentException | IllegalStateException e) {
-            // Registrar intento fallido para errores de autenticación
             if (!"Demasiados intentos fallidos".startsWith(e.getMessage())) {
                 attemptService.recordFailedAttempt(identifier);
             }

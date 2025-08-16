@@ -1,30 +1,21 @@
 # ===================================================================
 # PERFIL DE DESARROLLO (dev)
-# Optimizado para la productividad del desarrollador local.
 # ===================================================================
 spring:
-  # Conexión a la base de datos local de desarrollo
   datasource:
     url: ${DATABASE_URL}
     username: ${DATABASE_USERNAME}
     password: ${DATABASE_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
-    show-sql: true # Muestra las queries SQL en la consola
+    show-sql: true
     hibernate:
-      ddl-auto: validate # Valida que el esquema de la BD coincida con las entidades
+      ddl-auto: validate
       dialect: org.hibernate.dialect.MySQLDialect
 
   # Desactivar caché en desarrollo para ver los cambios inmediatamente
   cache:
     type: none
-
-  # Habilitar H2 Console para inspeccionar la BD (si se usa H2 temporalmente)
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
-
 # Configuración de Logging Detallado
 logging:
   level:
@@ -37,8 +28,8 @@ logging:
 # Configuración JWT para desarrollo
 jwt:
   secret: ${JWT_SECRET}
-  expiration: ${JWT_EXPIRATION}
-  refresh-token-expiration: 604800000
+  access-token-expiration: ${JWT_ACCESS_TOKEN_EXPIRATION:}
+  refresh-token-expiration: ${JWT_REFRESH_TOKEN_EXPIRATION}
 
 app:
   auth:

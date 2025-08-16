@@ -1,17 +1,11 @@
-# ===================================================================
-# CONFIGURACIÓN BASE - PROPIEDADES COMUNES A TODOS LOS ENTORNOS
-# ===================================================================
 spring:
   application:
     name: sistema-academico-enterprise
-
-  # Perfil activo por defecto es 'dev'
   profiles:
     active: dev
 
-  # Configuración JPA común
   jpa:
-    open-in-view: false # Buena práctica para evitar problemas de rendimiento
+    open-in-view: false
     properties:
       hibernate:
         format_sql: true
@@ -34,7 +28,7 @@ spring:
       write-dates-as-timestamps: false
     deserialization:
       fail-on-unknown-properties: false
-    time-zone: America/Bogota # Ajustado a tu zona horaria
+    time-zone: America/Bogota
 
   # Configuración de Correo (plantilla)
   mail:
@@ -80,19 +74,6 @@ management:
     tags:
       application: ${spring.application.name}
 
-jwt:
-  # Secret debe ser sobrescrito por variables de entorno en cada ambiente
-  secret: ${JWT_SECRET:default-secret-key-for-development-only-must-be-changed-in-production}
-
-  # Expiración del access token en milisegundos (15 minutos por defecto)
-  access-token-expiration: ${JWT_ACCESS_TOKEN_EXPIRATION:900000}
-
-  # Expiración del refresh token en milisegundos (7 días por defecto)
-  refresh-token-expiration: ${JWT_REFRESH_TOKEN_EXPIRATION:604800000}
-
-# ===================================================================
-# CONFIGURACIÓN DE APLICACIÓN ESPECÍFICA
-# ===================================================================
 app:
   # Configuración de rate limiting para autenticación
   auth:
