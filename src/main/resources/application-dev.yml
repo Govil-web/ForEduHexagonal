@@ -16,6 +16,19 @@ spring:
   # Desactivar caché en desarrollo para ver los cambios inmediatamente
   cache:
     type: none
+
+  # Configuración de Redis para rate limiting
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      timeout: 2000ms
+      lettuce:
+        pool:
+          max-active: 10
+          max-idle: 10
+          min-idle: 2
 # Configuración de Logging Detallado
 logging:
   level:
@@ -28,9 +41,10 @@ logging:
 # Configuración JWT para desarrollo
 jwt:
   secret: ${JWT_SECRET}
-  access-token-expiration: ${JWT_ACCESS_TOKEN_EXPIRATION:}
-  refresh-token-expiration: ${JWT_REFRESH_TOKEN_EXPIRATION}
-
+  access-token-expiration: ${JWT_ACCESS_TOKEN_EXPIRATION} # 15 minutos
+  refresh-token-expiration: ${JWT_REFRESH_TOKEN_EXPIRATION} # 7 días
+  #algorithm: ${JWT_ALGORITHM:HS512} # Algoritmo más fuerte
+  #issuer: ${JWT_ISSUER:academia-system}
 app:
   auth:
     max-login-attempts: 10 # Más permisivo en desarrollo

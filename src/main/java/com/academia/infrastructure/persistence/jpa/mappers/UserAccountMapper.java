@@ -1,6 +1,7 @@
 package com.academia.infrastructure.persistence.jpa.mappers;
 
 import com.academia.domain.model.aggregates.UserAccount;
+import com.academia.domain.model.entities.Role;
 import com.academia.domain.model.entities.User;
 import com.academia.domain.model.enums.AccountStatus;
 import com.academia.domain.model.valueobjects.ids.AccountId;
@@ -11,17 +12,21 @@ import com.academia.infrastructure.persistence.jpa.entities.UserJpaEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Set;
 
-@Mapper(componentModel = "spring")
-public interface UserAccountMapper {
-    UserAccountMapper INSTANCE = Mappers.getMapper(UserAccountMapper.class);
+@Mapper(componentModel = "spring", uses = {RoleMapper.class})
+public abstract class UserAccountMapper {
+
+    @Autowired
+    protected RoleMapper roleMapper;
 
     // --- De Entidad JPA a Dominio ---
     // NOTA: User tiene campos final, usamos método custom para crear la instancia
-    default User toDomain(UserJpaEntity entity) {
+    public User toDomain(UserJpaEntity entity) {
         if (entity == null) {
             return null;
         }
@@ -31,8 +36,8 @@ public interface UserAccountMapper {
         Name name = new Name(entity.getFirstName(), entity.getLastName());
         Email email = new Email(entity.getEmail());
 
-        // Crear User usando el constructor existente (sin createdAt/updatedAt)
-        return new User(
+        // Crear User usando el constructor existente
+        User user = new User(
                 accountId,
                 organizationId,
                 name,
@@ -41,9 +46,15 @@ public interface UserAccountMapper {
                 entity.getPasswordHash(),
                 entity.getAccountStatus()
         );
+
+        // Asignar roles cargados desde la BD
+        Set<Role> roles = roleMapper.toDomainSet(entity.getRoles());
+        roles.forEach(user::assignRole);
+
+        return user;
     }
 
-    default UserAccount toAggregate(UserJpaEntity entity) {
+    public UserAccount toAggregate(UserJpaEntity entity) {
         return new UserAccount(toDomain(entity));
     }
 
@@ -60,5 +71,6 @@ public interface UserAccountMapper {
     @Mapping(target = "phoneNumber", ignore = true) // Campo opcional no mapeado
     @Mapping(target = "createdAt", ignore = true) // Manejado por @PrePersist
     @Mapping(target = "updatedAt", ignore = true) // Manejado por @PreUpdate
-    UserJpaEntity toJpa(UserAccount aggregate);
+    @Mapping(target = "roles", ignore = true) // Roles se manejan por separado
+    public abstract UserJpaEntity toJpa(UserAccount aggregate);
 }

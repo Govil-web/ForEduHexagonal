@@ -6,6 +6,7 @@ import com.academia.domain.model.entities.User;
 import com.academia.domain.ports.out.JwtTokenProvider;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -26,15 +27,31 @@ public class JwtTokenProviderImpl implements JwtTokenProvider {
     private final SecretKey secretKey;
     private final long accessTokenExpirationMs;
     private final long refreshTokenExpirationMs;
+    private final String issuer;
+    private final String audience;
+    private final SignatureAlgorithm algorithm;
 
     public JwtTokenProviderImpl(
             @Value("${jwt.secret}") String secret,
             @Value("${jwt.access-token-expiration:900000}") long accessTokenExpirationMs, // 15 min
-            @Value("${jwt.refresh-token-expiration:604800000}") long refreshTokenExpirationMs // 7 días
+            @Value("${jwt.refresh-token-expiration:604800000}") long refreshTokenExpirationMs, // 7 días
+            @Value("${jwt.issuer:academia-system}") String issuer,
+            @Value("${jwt.audience:academia-api}") String audience,
+            @Value("${jwt.algorithm:HS512}") String algorithmName
     ) {
+        // Validar que el secret tenga suficiente entropía
+        if (secret.length() < 32) {
+            throw new IllegalArgumentException("JWT secret debe tener al menos 32 caracteres (256 bits)");
+        }
+        
         this.secretKey = Keys.hmacShaKeyFor(secret.getBytes());
         this.accessTokenExpirationMs = accessTokenExpirationMs;
         this.refreshTokenExpirationMs = refreshTokenExpirationMs;
+        this.issuer = issuer;
+        this.audience = audience;
+        this.algorithm = SignatureAlgorithm.valueOf(algorithmName);
+        
+        log.info("JWT Provider configurado con algoritmo: {}, issuer: {}", algorithm, issuer);
     }
 
     @Override
@@ -43,7 +60,12 @@ public class JwtTokenProviderImpl implements JwtTokenProvider {
 
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", user.getId().getValue());
-        claims.put("organizationId", user.getOrganizationId().getValue());
+        // Manejar el caso de usuarios del sistema que no tienen organizationId
+        if (user.getOrganizationId() != null) {
+            claims.put("organizationId", user.getOrganizationId().getValue());
+        } else {
+            claims.put("organizationId", null);
+        }
         claims.put("organizationSubdomain", organizationSubdomain);
         claims.put("fullName", user.getName().getFullName());
         claims.put("accountStatus", user.getAccountStatus().name());
@@ -60,12 +82,18 @@ public class JwtTokenProviderImpl implements JwtTokenProvider {
                 .collect(Collectors.toList());
         claims.put("permissions", permissions);
 
+        Date now = new Date();
+        Date expiration = new Date(now.getTime() + accessTokenExpirationMs);
+        
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(user.getEmail().value())
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + accessTokenExpirationMs))
-                .signWith(secretKey)
+                .setIssuer(issuer)
+                .setAudience(audience)
+                .setIssuedAt(now)
+                .setExpiration(expiration)
+                .setId(java.util.UUID.randomUUID().toString()) // JTI único
+                .signWith(secretKey, algorithm)
                 .compact();
     }
 
@@ -73,13 +101,19 @@ public class JwtTokenProviderImpl implements JwtTokenProvider {
     public String generateRefreshToken(UserAccount userAccount) {
         User user = userAccount.getUser();
 
+        Date now = new Date();
+        Date expiration = new Date(now.getTime() + refreshTokenExpirationMs);
+        
         return Jwts.builder()
                 .setSubject(user.getEmail().value())
                 .claim("userId", user.getId().getValue())
                 .claim("tokenType", "refresh")
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + refreshTokenExpirationMs))
-                .signWith(secretKey)
+                .setIssuer(issuer)
+                .setAudience(audience)
+                .setIssuedAt(now)
+                .setExpiration(expiration)
+                .setId(java.util.UUID.randomUUID().toString()) // JTI único
+                .signWith(secretKey, algorithm)
                 .compact();
     }
 
@@ -88,9 +122,20 @@ public class JwtTokenProviderImpl implements JwtTokenProvider {
         try {
             Jwts.parserBuilder()
                     .setSigningKey(secretKey)
+                    .requireIssuer(issuer) // Validar issuer
+                    .requireAudience(audience) // Validar audience
                     .build()
                     .parseClaimsJws(token);
             return true;
+        } catch (ExpiredJwtException e) {
+            log.debug("Token JWT expirado: {}", e.getMessage());
+            return false;
+        } catch (MalformedJwtException e) {
+            log.warn("Token JWT malformado: {}", e.getMessage());
+            return false;
+        } catch (SignatureException e) {
+            log.warn("Firma JWT inválida: {}", e.getMessage());
+            return false;
         } catch (JwtException | IllegalArgumentException e) {
             log.debug("Token JWT inválido: {}", e.getMessage());
             return false;
@@ -154,11 +199,17 @@ public class JwtTokenProviderImpl implements JwtTokenProvider {
 
     /**
      * Extrae el ID de la organización del token.
+     * Puede devolver null para usuarios del sistema.
      */
     public Long extractOrganizationId(String token) {
         Map<String, Object> claims = extractClaims(token);
         Object orgId = claims.get("organizationId");
 
+        if (orgId == null) {
+            // Para usuarios del sistema, el organizationId es null
+            return null;
+        }
+        
         if (orgId instanceof Number) {
             return ((Number) orgId).longValue();
         }

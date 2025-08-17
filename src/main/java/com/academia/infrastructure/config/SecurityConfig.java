@@ -2,9 +2,12 @@ package com.academia.infrastructure.config;
 
 import com.academia.infrastructure.security.jwt.JwtAuthenticationFilter;
 import com.academia.infrastructure.security.jwt.JwtAuthenticationEntryPoint;
+import com.academia.infrastructure.security.filters.SecurityHeadersFilter;
+import com.academia.infrastructure.security.filters.RateLimitFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -14,6 +17,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -35,12 +39,25 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final UserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
+    private final Environment environment;
+    private final SecurityHeadersFilter securityHeadersFilter;
+    private final RateLimitFilter rateLimitFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 // Deshabilitar CSRF ya que usamos JWT
                 .csrf(AbstractHttpConfigurer::disable)
+
+                // Configurar headers de seguridad (Spring Security 6.1+ sintaxis)
+                .headers(headers -> headers
+                    .frameOptions(frameOptions -> frameOptions.deny()) // Prevenir clickjacking
+                    .contentTypeOptions(Customizer.withDefaults()) // Prevenir MIME type sniffing
+                    .httpStrictTransportSecurity(hstsConfig -> hstsConfig
+                        .maxAgeInSeconds(31536000) // 1 año
+                        .includeSubDomains(true)
+                    )
+                )
 
                 // Configurar CORS
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
@@ -81,7 +98,9 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
 
-                // Agregar filtro JWT antes del filtro de autenticación estándar
+                // Agregar filtros de seguridad en orden de prioridad
+                .addFilterBefore(rateLimitFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(securityHeadersFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -104,16 +123,68 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // Permitir orígenes específicos en producción
-        configuration.setAllowedOriginPatterns(List.of("*")); // En prod: dominios específicos
+        // Configuración CORS restrictiva basada en entorno
+        configuration.setAllowedOriginPatterns(getAllowedOrigins());
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
+        
+        // Headers específicos permitidos (más restrictivo que "*")
+        configuration.setAllowedHeaders(Arrays.asList(
+            "Authorization",
+            "Content-Type", 
+            "X-Requested-With",
+            "Accept",
+            "Origin",
+            "Access-Control-Request-Method",
+            "Access-Control-Request-Headers",
+            "X-Organization-Subdomain" // Header personalizado para multi-tenancy
+        ));
+        
+        // Headers que se exponen al cliente
+        configuration.setExposedHeaders(Arrays.asList(
+            "X-Total-Count",
+            "X-Page-Count", 
+            "Authorization"
+        ));
+        
         configuration.setAllowCredentials(true);
-        configuration.setMaxAge(3600L);
+        configuration.setMaxAge(3600L); // Cache preflight por 1 hora
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/api/**", configuration);
 
         return source;
+    }
+
+    /**
+     * Obtiene los orígenes permitidos basado en el entorno activo.
+     */
+    private List<String> getAllowedOrigins() {
+        // Obtener perfiles activos
+        String[] activeProfiles = environment.getActiveProfiles();
+        
+        if (Arrays.asList(activeProfiles).contains("prod")) {
+            // PRODUCCIÓN: Solo dominios específicos
+            return Arrays.asList(
+                "https://academy.yourdomain.com",
+                "https://admin.yourdomain.com",
+                "https://api.yourdomain.com"
+            );
+        } else if (Arrays.asList(activeProfiles).contains("test")) {
+            // TESTING: Dominios de test
+            return Arrays.asList(
+                "http://localhost:3000",
+                "http://localhost:4200",
+                "http://test.academy.local"
+            );
+        } else {
+            // DESARROLLO: Más permisivo pero aún restringido
+            return Arrays.asList(
+                "http://localhost:3000",
+                "http://localhost:4200", 
+                "http://localhost:8080",
+                "http://127.0.0.1:3000",
+                "http://127.0.0.1:4200"
+            );
+        }
     }
 }

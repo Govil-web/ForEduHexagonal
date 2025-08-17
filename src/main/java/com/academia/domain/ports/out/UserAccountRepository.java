@@ -10,4 +10,12 @@ public interface UserAccountRepository {
     Optional<UserAccount> findById(AccountId id);
     Optional<UserAccount> findByEmail(OrganizationId organizationId, Email email);
     boolean existsByEmail(OrganizationId organizationId, Email email);
+    /**
+     * Busca un usuario del sistema (super admin) por email.
+     * Para usuarios que NO pertenecen a ninguna organización (organization_id IS NULL).
+     *
+     * @param email Email del usuario del sistema
+     * @return Optional con el UserAccount si existe
+     */
+    Optional<UserAccount> findSystemUserByEmail(Email email);
 }

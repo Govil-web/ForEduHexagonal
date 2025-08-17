@@ -43,4 +43,9 @@ public class JpaUserAccountRepositoryAdapter implements UserAccountRepository {
     public boolean existsByEmail(OrganizationId organizationId, Email email) {
         return jpaRepository.existsByOrganizationIdAndEmail(organizationId.getValue(), email.value());
     }
+    @Override
+    public Optional<UserAccount> findSystemUserByEmail(Email email) {
+        return jpaRepository.findByOrganizationIdIsNullAndEmail(email.value())
+                .map(mapper::toAggregate);
+    }
 }

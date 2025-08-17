@@ -18,7 +18,7 @@ spring:
   data:
     redis:
       host: ${REDIS_HOST}
-      port: ${REDIS_PORT:6379}
+      port: ${REDIS_PORT}
       password: ${REDIS_PASSWORD}
       timeout: 2000ms
       lettuce:
@@ -38,19 +38,33 @@ logging:
     root: INFO
     com.academia: WARN
 
-# JWT Secret y expiración desde variables de entorno
+# JWT Secret y expiración desde variables de entorno - CONFIGURACIÓN SEGURA
 jwt:
-  secret: ${JWT_SECRET}
-  access-token-expiration: ${JWT_ACCESS_TOKEN_EXPIRATION} # 15 minutos
-  refresh-token-expiration: ${JWT_REFRESH_TOKEN_EXPIRATION} # 7 días
+  secret: ${JWT_SECRET} # OBLIGATORIO: 256+ bits de entropía
+  access-token-expiration: ${JWT_ACCESS_TOKEN_EXPIRATION:600000} # 10 min más corto
+  refresh-token-expiration: ${JWT_REFRESH_TOKEN_EXPIRATION:259200000} # 3 días más corto
+  algorithm: ${JWT_ALGORITHM:HS512} # Algoritmo más fuerte
+  issuer: ${JWT_ISSUER:academia-system-prod}
+  audience: ${JWT_AUDIENCE:academia-api}
 
 app:
   auth:
     max-login-attempts: ${AUTH_MAX_LOGIN_ATTEMPTS:3}
-    login-attempt-window-minutes: ${AUTH_LOGIN_ATTEMPT_WINDOW:1}
+    login-attempt-window-minutes: ${AUTH_LOGIN_ATTEMPT_WINDOW:15} # Más estricto
   security:
     allowed-origins: ${ALLOWED_ORIGINS} # Variable de entorno obligatoria
-    max-session-duration-minutes: ${MAX_SESSION_DURATION:240} # 4 horas
+    max-session-duration-minutes: ${MAX_SESSION_DURATION:30} # Más corto en prod
+    require-https: true
+    password-policy:
+      min-length: 14 # Más estricto en producción
+      require-special-chars: true
+      require-numbers: true
+      require-uppercase: true
+      require-lowercase: true
+    rate-limiting:
+      enabled: true
+      requests-per-minute: 100
+      burst-size: 20
 
 
 
