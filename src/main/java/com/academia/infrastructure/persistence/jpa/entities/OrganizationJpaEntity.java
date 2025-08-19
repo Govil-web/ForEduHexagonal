@@ -13,11 +13,8 @@ import java.time.LocalDateTime;
 public class OrganizationJpaEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(nullable = false, unique = true, length = 36)
-    private String uuid;
+    @Column(name = "id", length = 36, columnDefinition = "CHAR(36)")
+    private java.util.UUID id;
 
     @Column(nullable = false, length = 100)
     private String name;
@@ -43,9 +40,9 @@ public class OrganizationJpaEntity {
         createdAt = now;
         updatedAt = now;
 
-        // Generar UUID si no existe
-        if (uuid == null) {
-            uuid = java.util.UUID.randomUUID().toString();
+        // Generar ID UUID si no existe
+        if (id == null) {
+            id = java.util.UUID.randomUUID();
         }
     }
 

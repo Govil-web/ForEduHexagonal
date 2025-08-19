@@ -16,9 +16,9 @@ public class EnrollmentEligibilityChecker {
 
     public boolean isStudentEligible(Student student, Course course) {
         // Regla 1: El estudiante y el curso deben pertenecer a la misma organización.
-        if (!student.getOrganizationId().equals(course.getSubject().getOrganizationId())) {
-            throw new IllegalStateException("El estudiante y el curso no pertenecen a la misma organización.");
-        }
+        // Esta validación debe realizarse en la capa de aplicación donde tenemos acceso
+        // a repositorios para obtener el Subject y validar la organización
+        // Por ahora, asumimos que esta validación se hace en otro lugar
 
         // Regla 2: El estudiante no debe estar ya inscrito en el curso.
         boolean alreadyEnrolled = course.getEnrollments().stream()

@@ -5,6 +5,7 @@ import com.academia.domain.model.entities.Role;
 import com.academia.domain.model.entities.User;
 import com.academia.domain.model.enums.AccountStatus;
 import com.academia.domain.model.valueobjects.ids.AccountId;
+import com.academia.domain.model.valueobjects.ids.OrganizationId;
 import com.academia.domain.ports.out.UserAccountRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,14 +49,14 @@ public class CustomUserDetailsService implements UserDetailsService {
      * Carga los detalles del usuario por email y organización.
      * Método personalizado que respeta el contexto multi-tenant.
      */
-    public UserDetails loadUserByEmailAndOrganization(String email, Long organizationId)
+    public UserDetails loadUserByEmailAndOrganization(String email, UUID organizationId)
             throws UsernameNotFoundException {
 
         log.debug("Cargando detalles del usuario para email: {} en organización: {}", email, organizationId);
 
         // Buscar usuario por email en la organización específica
         UserAccount userAccount = userAccountRepository.findByEmail(
-                new com.academia.domain.model.valueobjects.ids.OrganizationId(organizationId),
+                new OrganizationId(organizationId),
                 new com.academia.domain.model.valueobjects.user.Email(email)
         ).orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + email));
 
@@ -68,7 +70,7 @@ public class CustomUserDetailsService implements UserDetailsService {
      * Carga los detalles del usuario por ID de cuenta.
      * Útil para validación de tokens JWT.
      */
-    public UserDetails loadUserByAccountId(Long accountId) throws UsernameNotFoundException {
+    public UserDetails loadUserByAccountId(UUID accountId) throws UsernameNotFoundException {
         log.debug("Cargando detalles del usuario por ID: {}", accountId);
 
         UserAccount userAccount = userAccountRepository.findById(new AccountId(accountId))

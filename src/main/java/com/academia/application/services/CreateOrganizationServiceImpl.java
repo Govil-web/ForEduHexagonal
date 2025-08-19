@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -154,7 +155,7 @@ public class CreateOrganizationServiceImpl implements CreateOrganizationUseCase 
     }
 
     // Constantes para los roles
-    private static final int ORGANIZATION_ADMIN_ROLE_ID = 2;
+    private static final Integer ORGANIZATION_ADMIN_ROLE_ID = 2;
     private static final String ORGANIZATION_ADMIN_ROLE_NAME = "ORGANIZATION_ADMIN";
     private static final Set<String> ORGANIZATION_ADMIN_PERMISSIONS = Set.of(
             "organization:manage", 

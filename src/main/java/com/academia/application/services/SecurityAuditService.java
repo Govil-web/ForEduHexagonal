@@ -145,6 +145,58 @@ public class SecurityAuditService {
     }
 
     /**
+     * Registra un evento de negocio genérico para auditoría.
+     */
+    public void logBusinessEvent(
+            String action,
+            String resource,
+            String description,
+            OrganizationId organizationId,
+            Map<String, Object> metadata
+    ) {
+        // Aquí asumimos que el evento es exitoso y no tenemos un contexto de usuario específico (IP, etc.)
+        // que es común para eventos de sistema o asíncronos.
+        logSecurityEvent(
+                AuditEventType.BUSINESS_PROCESS, // Un tipo genérico para eventos de negocio
+                null, // userId (no disponible en este contexto)
+                organizationId,
+                "system", // userEmail (marcado como sistema)
+                "N/A", // ipAddress
+                "N/A", // userAgent
+                resource,
+                action,
+                true, // success
+                null, // failureReason
+                metadata
+        );
+    }
+
+    /**
+     * Registra un evento genérico simplificado.
+     */
+    public void logEvent(String eventType, String description, String organizationIdStr) {
+        try {
+            OrganizationId orgId = organizationIdStr != null ? OrganizationId.of(organizationIdStr) : null;
+            
+            logSecurityEvent(
+                AuditEventType.BUSINESS_PROCESS,
+                null, // userId
+                orgId, // organizationId
+                "system", // userEmail
+                "N/A", // ipAddress
+                "N/A", // userAgent
+                eventType, // resource
+                "system_event", // action
+                true, // success
+                null, // failureReason
+                Map.of("description", description, "eventType", eventType)
+            );
+        } catch (Exception e) {
+            log.error("Error logging event: {}", e.getMessage(), e);
+        }
+    }
+
+    /**
      * Registra actividad sospechosa.
      */
     public void logSuspiciousActivity(

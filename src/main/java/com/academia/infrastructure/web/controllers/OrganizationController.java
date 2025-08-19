@@ -18,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/organizations")
 @RequiredArgsConstructor
@@ -73,7 +75,7 @@ public class OrganizationController {
             summary = "Obtener detalles de organización",
             description = "Obtiene los detalles de una organización específica"
     )
-    public ResponseEntity<OrganizationDetailsDTO> getOrganization(@PathVariable Long organizationId) {
+    public ResponseEntity<OrganizationDetailsDTO> getOrganization(@PathVariable UUID organizationId) {
         // Placeholder para futura implementación
         log.info("Solicitud para obtener organización con ID: {}", organizationId);
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();

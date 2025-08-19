@@ -2,8 +2,8 @@ package com.academia.domain.model.aggregates;
 import com.academia.domain.model.entities.Enrollment;
 import com.academia.domain.model.entities.Staff;
 import com.academia.domain.model.entities.Student;
-import com.academia.domain.model.entities.Subject;
-import com.academia.domain.model.entities.AcademicTerm;
+import com.academia.domain.model.valueobjects.ids.SubjectId;
+import com.academia.domain.model.valueobjects.ids.AcademicTermId;
 import com.academia.domain.model.events.CourseEvents;
 import com.academia.domain.model.events.DomainEvent;
 import com.academia.domain.model.services.EnrollmentEligibilityChecker;
@@ -19,16 +19,16 @@ import java.util.Set;
 @Getter
 public class Course {
     private final CourseId id;
-    private final Subject subject;
-    private final AcademicTerm term;
+    private final SubjectId subjectId;
+    private final AcademicTermId termId;
     private AccountId teacherId;
     private Set<Enrollment> enrollments;
     private final List<DomainEvent> domainEvents = new ArrayList<>();
 
-    public Course(CourseId id, Subject subject, AcademicTerm term) {
+    public Course(CourseId id, SubjectId subjectId, AcademicTermId termId) {
         this.id = id;
-        this.subject = subject;
-        this.term = term;
+        this.subjectId = subjectId;
+        this.termId = termId;
         this.enrollments = new HashSet<>();
     }
 

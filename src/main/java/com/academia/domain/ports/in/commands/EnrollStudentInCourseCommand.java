@@ -1,9 +1,11 @@
 package com.academia.domain.ports.in.commands;
 
+import java.util.UUID;
+
 /**
  * Comando que representa la intención de inscribir un estudiante en un curso.
  */
 public record EnrollStudentInCourseCommand(
-        Long studentAccountId,
-        Long courseId
+        UUID studentAccountId,
+        UUID courseId
 ) {}

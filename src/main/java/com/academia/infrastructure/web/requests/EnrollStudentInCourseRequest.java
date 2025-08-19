@@ -1,11 +1,12 @@
 package com.academia.infrastructure.web.requests;
 
 import jakarta.validation.constraints.NotNull;
+import java.util.UUID;
 
 public record EnrollStudentInCourseRequest(
         @NotNull
-        Long studentAccountId,
+        UUID studentAccountId,
 
         @NotNull
-        Long courseId
+        UUID courseId
 ) {}

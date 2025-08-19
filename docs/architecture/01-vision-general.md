@@ -7,4 +7,4 @@ El objetivo es ofrecer una fuente única de verdad, segura y adaptable, que gest
 
 ## Público Objetivo
 * **Instituciones Educativas**: Clientes (tenants) de la plataforma.
-* **Usuarios Finales**: Administradores, personal académico, profesores, estudiantes y tutores. Los datos de prueba en `V2__Insert_Comprehensive_Seed_Data.sql` reflejan esta diversidad de roles.
+* **Usuarios Finales**: Administradores, personal académico, profesores, estudiantes y tutores. Los datos de prueba en `V2__Insert_Initial_Data_And_Permissions.sql` reflejan esta diversidad de roles.

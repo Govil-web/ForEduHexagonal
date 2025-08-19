@@ -11,7 +11,7 @@ import java.util.Optional;
  * Repositorio Spring Data JPA para la entidad EmailOrganizationIndexJpaEntity.
  * Proporciona métodos para buscar organizaciones por email de forma global.
  */
-public interface SpringEmailOrganizationIndexRepository extends JpaRepository<EmailOrganizationIndexJpaEntity, Long> {
+public interface SpringEmailOrganizationIndexRepository extends JpaRepository<EmailOrganizationIndexJpaEntity, java.util.UUID> {
 
     /**
      * Busca el ID de la organización asociada a un email.
@@ -20,7 +20,7 @@ public interface SpringEmailOrganizationIndexRepository extends JpaRepository<Em
      * @return Optional con el ID de la organización si existe, o empty si no existe
      */
     @Query("SELECT e.organizationId FROM EmailOrganizationIndexJpaEntity e WHERE e.email = :email")
-    Optional<Long> findOrganizationIdByEmail(@Param("email") String email);
+    Optional<java.util.UUID> findOrganizationIdByEmail(@Param("email") String email);
     
     /**
      * Verifica si un email existe en el índice global.
@@ -35,5 +35,5 @@ public interface SpringEmailOrganizationIndexRepository extends JpaRepository<Em
      * 
      * @param userId El ID del usuario
      */
-    void deleteByUserId(Long userId);
+    void deleteByUserId(java.util.UUID userId);
 }

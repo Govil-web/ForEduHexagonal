@@ -7,6 +7,7 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Entidad de dominio para logs de auditoría de seguridad.
@@ -15,7 +16,7 @@ import java.util.Map;
 @Getter
 public class AuditLog {
     
-    private final Long id;
+    private final UUID id;
     private final AuditEventType eventType;
     private final AccountId userId;
     private final OrganizationId organizationId;
@@ -32,7 +33,7 @@ public class AuditLog {
     private final String requestId;
     
     public AuditLog(
-            Long id,
+            UUID id,
             AuditEventType eventType,
             AccountId userId,
             OrganizationId organizationId,
@@ -68,7 +69,7 @@ public class AuditLog {
      * Constructor completo incluyendo timestamp (para mappers de persistencia).
      */
     public AuditLog(
-            Long id,
+            UUID id,
             AuditEventType eventType,
             AccountId userId,
             OrganizationId organizationId,

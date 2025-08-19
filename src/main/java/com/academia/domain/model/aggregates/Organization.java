@@ -1,13 +1,7 @@
 package com.academia.domain.model.aggregates;
 
-import com.academia.domain.model.entities.AcademicTerm;
-import com.academia.domain.model.valueobjects.academic.TermDates;
 import com.academia.domain.model.valueobjects.ids.OrganizationId;
 import lombok.Getter;
-
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
 @Getter
 public class Organization {
@@ -16,7 +10,6 @@ public class Organization {
     private String subdomain;
     private int digitalConsentAge;
     private boolean isActive;
-    private Set<AcademicTerm> academicTerms;
 
     public Organization(OrganizationId id, String name, int consentAge) {
         this.id = id;
@@ -24,7 +17,6 @@ public class Organization {
         this.subdomain = generateDefaultSubdomain(name); // Generar subdomain por defecto
         this.digitalConsentAge = consentAge;
         this.isActive = true;
-        this.academicTerms = new HashSet<>();
     }
 
     public Organization(OrganizationId id, String name, String subdomain, int consentAge) {
@@ -33,26 +25,11 @@ public class Organization {
         this.subdomain = subdomain != null ? subdomain : generateDefaultSubdomain(name);
         this.digitalConsentAge = consentAge;
         this.isActive = true;
-        this.academicTerms = new HashSet<>();
     }
 
     public void updateDetails(String newName, int newConsentAge) {
         this.name = newName;
         this.digitalConsentAge = newConsentAge;
-    }
-
-    public AcademicTerm createAcademicTerm(String name, TermDates dates) {
-        // Lógica de negocio: evitar solapamiento de fechas
-        boolean overlaps = academicTerms.stream().anyMatch(term ->
-                dates.getStartDate().isBefore(term.getEndDate()) &&
-                        term.getStartDate().isBefore(dates.getEndDate())
-        );
-        if (overlaps) {
-            throw new IllegalStateException("Las fechas del nuevo período académico se solapan con uno existente.");
-        }
-        AcademicTerm newTerm = new AcademicTerm(null, this.id, name, dates.getStartDate(), dates.getEndDate());
-        this.academicTerms.add(newTerm);
-        return newTerm;
     }
 
     private String generateDefaultSubdomain(String name) {
@@ -61,9 +38,5 @@ public class Organization {
                 .replaceAll("[^a-z0-9\\s]", "")
                 .replaceAll("\\s+", "-")
                 .substring(0, Math.min(name.length(), 20));
-    }
-
-    public Set<AcademicTerm> getAcademicTerms() {
-        return Collections.unmodifiableSet(academicTerms);
     }
 }

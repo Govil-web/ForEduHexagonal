@@ -37,7 +37,6 @@ public interface OrganizationMapper {
     @Mapping(source = "subdomain", target = "subdomain") // CORREGIDO: ahora mapea subdomain
     @Mapping(source = "digitalConsentAge", target = "digitalConsentAge")
     //@Mapping(source = "isActive", target = "isActive")
-    @Mapping(target = "uuid", ignore = true) // Se genera automáticamente
     @Mapping(target = "createdAt", ignore = true) // Manejado por @PrePersist
     @Mapping(target = "updatedAt", ignore = true) // Manejado por @PreUpdate
     OrganizationJpaEntity toJpa(Organization organization);

@@ -12,6 +12,10 @@ spring:
     hibernate:
       ddl-auto: validate
       dialect: org.hibernate.dialect.MySQLDialect
+    properties:
+      hibernate:
+        id.new_generator_mappings: true
+        jdbc.use_streams_for_binary: false
 
   # Desactivar caché en desarrollo para ver los cambios inmediatamente
   cache:

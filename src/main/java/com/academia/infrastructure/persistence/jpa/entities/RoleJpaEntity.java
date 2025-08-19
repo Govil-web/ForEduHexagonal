@@ -15,6 +15,7 @@ import java.util.Set;
 public class RoleJpaEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(name = "name", nullable = false, unique = true, length = 50)
@@ -31,4 +32,5 @@ public class RoleJpaEntity {
             inverseJoinColumns = @JoinColumn(name = "permission_id")
     )
     private Set<PermissionJpaEntity> permissions = new HashSet<>();
+
 }

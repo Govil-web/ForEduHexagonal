@@ -12,11 +12,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface SpringAuditLogRepository extends JpaRepository<AuditLogJpaEntity, Long> {
+public interface SpringAuditLogRepository extends JpaRepository<AuditLogJpaEntity, java.util.UUID> {
 
-    List<AuditLogJpaEntity> findByUserIdAndTimestampBetween(Long userId, LocalDateTime startDate, LocalDateTime endDate);
+    List<AuditLogJpaEntity> findByUserIdAndTimestampBetween(java.util.UUID userId, LocalDateTime startDate, LocalDateTime endDate);
 
-    List<AuditLogJpaEntity> findByOrganizationIdAndTimestampBetween(Long organizationId, LocalDateTime startDate, LocalDateTime endDate);
+    List<AuditLogJpaEntity> findByOrganizationIdAndTimestampBetween(java.util.UUID organizationId, LocalDateTime startDate, LocalDateTime endDate);
 
     List<AuditLogJpaEntity> findByEventTypeAndTimestampAfter(AuditEventType eventType, LocalDateTime since);
 
@@ -36,5 +36,5 @@ public interface SpringAuditLogRepository extends JpaRepository<AuditLogJpaEntit
     void deleteByTimestampBefore(LocalDateTime cutoffDate);
 
     @Query("SELECT a FROM AuditLogJpaEntity a WHERE a.userId = :userId AND a.success = true AND a.eventType = 'LOGIN_SUCCESS' ORDER BY a.timestamp DESC LIMIT 1")
-    Optional<AuditLogJpaEntity> findLastSuccessfulLoginByUserId(@Param("userId") Long userId);
+    Optional<AuditLogJpaEntity> findLastSuccessfulLoginByUserId(@Param("userId") java.util.UUID userId);
 }

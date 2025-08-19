@@ -36,7 +36,7 @@ public class JpaEmailOrganizationIndexRepositoryAdapter implements EmailOrganiza
     }
 
     @Override
-    public void registerEmail(Email email, OrganizationId organizationId, Long userId) {
+    public void registerEmail(Email email, OrganizationId organizationId, java.util.UUID userId) {
         log.debug("Registrando email en índice global: {} para organización: {} y usuario: {}", 
                 email.value(), organizationId.getValue(), userId);
         

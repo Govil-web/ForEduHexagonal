@@ -14,18 +14,18 @@ import java.time.LocalDateTime;
 public class AuditLogJpaEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "id", length = 36, columnDefinition = "CHAR(36)")
+    private java.util.UUID id;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "event_type", nullable = false)
     private AuditEventType eventType;
 
-    @Column(name = "user_id")
-    private Long userId;
+    @Column(name = "user_id", length = 36, columnDefinition = "CHAR(36)")
+    private java.util.UUID userId;
 
-    @Column(name = "organization_id")
-    private Long organizationId;
+    @Column(name = "organization_id", length = 36, columnDefinition = "CHAR(36)")
+    private java.util.UUID organizationId;
 
     @Column(name = "user_email", length = 255)
     private String userEmail;
@@ -62,6 +62,9 @@ public class AuditLogJpaEntity {
 
     @PrePersist
     protected void onCreate() {
+        if (id == null) {
+            id = java.util.UUID.randomUUID();
+        }
         if (timestamp == null) {
             timestamp = LocalDateTime.now();
         }
