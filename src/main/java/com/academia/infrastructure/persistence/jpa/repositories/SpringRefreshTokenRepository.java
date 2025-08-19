@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-public interface SpringRefreshTokenRepository extends JpaRepository<RefreshTokenJpaEntity, java.util.UUID> {
+public interface SpringRefreshTokenRepository extends JpaRepository<RefreshTokenJpaEntity, Long> {
 
     /**
      * Busca un refresh token por su valor.
@@ -27,7 +27,7 @@ public interface SpringRefreshTokenRepository extends JpaRepository<RefreshToken
      */
     @Modifying
     @Query("UPDATE RefreshTokenJpaEntity rt SET rt.isRevoked = true, rt.revokedAt = :now WHERE rt.userId = :userId AND rt.isRevoked = false")
-    void revokeAllUserTokens(@Param("userId") java.util.UUID userId, @Param("now") LocalDateTime now);
+    void revokeAllUserTokens(@Param("userId") Long userId, @Param("now") LocalDateTime now);
 
     /**
      * Elimina tokens expirados para limpieza.
@@ -40,5 +40,5 @@ public interface SpringRefreshTokenRepository extends JpaRepository<RefreshToken
      * Cuenta tokens activos de un usuario.
      */
     @Query("SELECT COUNT(rt) FROM RefreshTokenJpaEntity rt WHERE rt.userId = :userId AND rt.isRevoked = false AND rt.expiresAt > :now")
-    long countActiveTokensForUser(@Param("userId") java.util.UUID userId, @Param("now") LocalDateTime now);
+    long countActiveTokensForUser(@Param("userId") Long userId, @Param("now") LocalDateTime now);
 }

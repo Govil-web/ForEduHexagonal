@@ -3,7 +3,7 @@ package com.academia.domain.model.events;
 import com.academia.domain.model.valueobjects.ids.OrganizationId;
 
 import java.time.Instant;
-import java.util.UUID;
+
 
 /**
  * Eventos de dominio relacionados con el agregado Organization.
@@ -15,7 +15,7 @@ public class OrganizationEvents {
      * Evento que se dispara cuando se crea una nueva organización.
      */
     public record OrganizationCreated(
-            UUID eventId,
+            Long eventId,
             Instant occurredOn,
             OrganizationId organizationId,
             String name,
@@ -23,11 +23,11 @@ public class OrganizationEvents {
     ) implements DomainEvent {
 
         public OrganizationCreated(OrganizationId organizationId, String name, String subdomain) {
-            this(UUID.randomUUID(), Instant.now(), organizationId, name, subdomain);
+            this(null, Instant.now(), organizationId, name, subdomain);
         }
 
         @Override
-        public UUID getEventId() {
+        public Long getEventId() {
             return eventId();
         }
 
@@ -41,18 +41,18 @@ public class OrganizationEvents {
      * Evento que se dispara cuando se actualiza una organización.
      */
     public record OrganizationUpdated(
-            UUID eventId,
+            Long eventId,
             Instant occurredOn,
             OrganizationId organizationId,
             String newName
     ) implements DomainEvent {
 
         public OrganizationUpdated(OrganizationId organizationId, String newName) {
-            this(UUID.randomUUID(), Instant.now(), organizationId, newName);
+            this(null, Instant.now(), organizationId, newName);
         }
 
         @Override
-        public UUID getEventId() {
+        public Long getEventId() {
             return eventId();
         }
 
@@ -66,17 +66,17 @@ public class OrganizationEvents {
      * Evento que se dispara cuando se desactiva una organización.
      */
     public record OrganizationDeactivated(
-            UUID eventId,
+            Long eventId,
             Instant occurredOn,
             OrganizationId organizationId
     ) implements DomainEvent {
 
         public OrganizationDeactivated(OrganizationId organizationId) {
-            this(UUID.randomUUID(), Instant.now(), organizationId);
+            this(null, Instant.now(), organizationId);
         }
 
         @Override
-        public UUID getEventId() {
+        public Long getEventId() {
             return eventId();
         }
 

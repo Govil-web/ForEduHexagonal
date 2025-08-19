@@ -6,7 +6,7 @@ import com.academia.domain.model.valueobjects.ids.AccountId;
 import com.academia.domain.model.valueobjects.academic.Grade;
 
 import java.time.Instant;
-import java.util.UUID;
+
 
 /**
  * Domain events related to Submission aggregate lifecycle and business operations.
@@ -14,25 +14,25 @@ import java.util.UUID;
 public class SubmissionEvents {
     
     public record SubmissionCreatedEvent(
-        UUID eventId,
+        Long eventId,
         Instant occurredOn,
         SubmissionId submissionId,
         AssignmentId assignmentId,
         AccountId studentId
     ) implements DomainEvent {
         public SubmissionCreatedEvent(SubmissionId submissionId, AssignmentId assignmentId, AccountId studentId) {
-            this(UUID.randomUUID(), Instant.now(), submissionId, assignmentId, studentId);
+            this(null, Instant.now(), submissionId, assignmentId, studentId);
         }
 
         @Override
-        public UUID getEventId() { return eventId(); }
+        public Long getEventId() { return eventId(); }
 
         @Override
         public Instant getOccurredOn() { return occurredOn(); }
     }
     
     public record SubmissionSubmittedEvent(
-        UUID eventId,
+        Long eventId,
         Instant occurredOn,
         SubmissionId submissionId,
         AssignmentId assignmentId,
@@ -40,18 +40,18 @@ public class SubmissionEvents {
         boolean isLate
     ) implements DomainEvent {
         public SubmissionSubmittedEvent(SubmissionId submissionId, AssignmentId assignmentId, AccountId studentId, boolean isLate) {
-            this(UUID.randomUUID(), Instant.now(), submissionId, assignmentId, studentId, isLate);
+            this(null, Instant.now(), submissionId, assignmentId, studentId, isLate);
         }
 
         @Override
-        public UUID getEventId() { return eventId(); }
+        public Long getEventId() { return eventId(); }
 
         @Override
         public Instant getOccurredOn() { return occurredOn(); }
     }
     
     public record SubmissionGradedEvent(
-        UUID eventId,
+        Long eventId,
         Instant occurredOn,
         SubmissionId submissionId,
         AssignmentId assignmentId,
@@ -60,36 +60,36 @@ public class SubmissionEvents {
         Grade grade
     ) implements DomainEvent {
         public SubmissionGradedEvent(SubmissionId submissionId, AssignmentId assignmentId, AccountId studentId, AccountId graderId, Grade grade) {
-            this(UUID.randomUUID(), Instant.now(), submissionId, assignmentId, studentId, graderId, grade);
+            this(null, Instant.now(), submissionId, assignmentId, studentId, graderId, grade);
         }
 
         @Override
-        public UUID getEventId() { return eventId(); }
+        public Long getEventId() { return eventId(); }
 
         @Override
         public Instant getOccurredOn() { return occurredOn(); }
     }
     
     public record SubmissionReturnedEvent(
-        UUID eventId,
+        Long eventId,
         Instant occurredOn,
         SubmissionId submissionId,
         AssignmentId assignmentId,
         AccountId studentId
     ) implements DomainEvent {
         public SubmissionReturnedEvent(SubmissionId submissionId, AssignmentId assignmentId, AccountId studentId) {
-            this(UUID.randomUUID(), Instant.now(), submissionId, assignmentId, studentId);
+            this(null, Instant.now(), submissionId, assignmentId, studentId);
         }
 
         @Override
-        public UUID getEventId() { return eventId(); }
+        public Long getEventId() { return eventId(); }
 
         @Override
         public Instant getOccurredOn() { return occurredOn(); }
     }
     
     public record ResubmissionRequiredEvent(
-        UUID eventId,
+        Long eventId,
         Instant occurredOn,
         SubmissionId submissionId,
         AssignmentId assignmentId,
@@ -97,29 +97,29 @@ public class SubmissionEvents {
         String feedback
     ) implements DomainEvent {
         public ResubmissionRequiredEvent(SubmissionId submissionId, AssignmentId assignmentId, AccountId studentId, String feedback) {
-            this(UUID.randomUUID(), Instant.now(), submissionId, assignmentId, studentId, feedback);
+            this(null, Instant.now(), submissionId, assignmentId, studentId, feedback);
         }
 
         @Override
-        public UUID getEventId() { return eventId(); }
+        public Long getEventId() { return eventId(); }
 
         @Override
         public Instant getOccurredOn() { return occurredOn(); }
     }
     
     public record SubmissionResubmittedEvent(
-        UUID eventId,
+        Long eventId,
         Instant occurredOn,
         SubmissionId submissionId,
         AssignmentId assignmentId,
         AccountId studentId
     ) implements DomainEvent {
         public SubmissionResubmittedEvent(SubmissionId submissionId, AssignmentId assignmentId, AccountId studentId) {
-            this(UUID.randomUUID(), Instant.now(), submissionId, assignmentId, studentId);
+            this(null, Instant.now(), submissionId, assignmentId, studentId);
         }
 
         @Override
-        public UUID getEventId() { return eventId(); }
+        public Long getEventId() { return eventId(); }
 
         @Override
         public Instant getOccurredOn() { return occurredOn(); }

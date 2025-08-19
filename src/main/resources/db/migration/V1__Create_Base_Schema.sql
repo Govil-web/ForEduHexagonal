@@ -8,7 +8,7 @@
 -- Tabla: organizations (Tenants principales)
 -- -----------------------------------------------------
 CREATE TABLE organizations (
-                               id CHAR(36) PRIMARY KEY,
+                               id BIGINT AUTO_INCREMENT PRIMARY KEY,
                                name VARCHAR(100) NOT NULL,
                                subdomain VARCHAR(50) NOT NULL UNIQUE,
                                is_active BOOLEAN DEFAULT TRUE NOT NULL,
@@ -24,8 +24,8 @@ CREATE TABLE organizations (
 -- Tabla: users (Identidad central unificada)
 -- -----------------------------------------------------
 CREATE TABLE users (
-                       id CHAR(36) PRIMARY KEY,
-                       organization_id CHAR(36), -- NULL para super admins del sistema
+                       id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                       organization_id BIGINT, -- NULL para super admins del sistema
                        first_name VARCHAR(50) NOT NULL,
                        last_name VARCHAR(50) NOT NULL,
                        dni VARCHAR(20),
@@ -48,10 +48,10 @@ CREATE TABLE users (
 -- Tabla: email_organization_index (Índice global para login)
 -- -----------------------------------------------------
 CREATE TABLE email_organization_index (
-                                          id CHAR(36) PRIMARY KEY,
+                                          id BIGINT AUTO_INCREMENT PRIMARY KEY,
                                           email VARCHAR(100) NOT NULL UNIQUE,
-                                          organization_id CHAR(36) NOT NULL,
-                                          user_id CHAR(36) NOT NULL,
+                                          organization_id BIGINT NOT NULL,
+                                          user_id BIGINT NOT NULL,
                                           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
                                           updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL,
 
@@ -66,9 +66,9 @@ CREATE TABLE email_organization_index (
 -- Tabla: refresh_tokens (Para autenticación JWT)
 -- -----------------------------------------------------
 CREATE TABLE refresh_tokens (
-                                id CHAR(36) PRIMARY KEY,
+                                id BIGINT AUTO_INCREMENT PRIMARY KEY,
                                 token VARCHAR(500) NOT NULL UNIQUE,
-                                user_id CHAR(36) NOT NULL,
+                                user_id BIGINT NOT NULL,
                                 expires_at TIMESTAMP NOT NULL,
                                 is_revoked BOOLEAN DEFAULT FALSE NOT NULL,
                                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
@@ -106,7 +106,7 @@ CREATE TABLE permissions (
 -- Tabla: user_roles (Asignación de roles)
 -- -----------------------------------------------------
 CREATE TABLE user_roles (
-                            user_id CHAR(36) NOT NULL,
+                            user_id BIGINT NOT NULL,
                             role_id INT NOT NULL,
                             assigned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
 
@@ -132,8 +132,8 @@ CREATE TABLE role_permissions (
 -- Tabla: student_profiles (Perfil específico de estudiantes)
 -- -----------------------------------------------------
 CREATE TABLE student_profiles (
-                                  user_id CHAR(36) PRIMARY KEY,
-                                  organization_id CHAR(36) NOT NULL,
+                                  user_id BIGINT PRIMARY KEY,
+                                  organization_id BIGINT NOT NULL,
                                   student_id_number VARCHAR(20) NOT NULL, -- Legajo
                                   enrollment_date DATE NOT NULL,
                                   current_grade_level VARCHAR(50),
@@ -147,7 +147,7 @@ CREATE TABLE student_profiles (
 -- Tabla: staff_profiles (Perfil específico de staff)
 -- -----------------------------------------------------
 CREATE TABLE staff_profiles (
-                                user_id CHAR(36) PRIMARY KEY,
+                                user_id BIGINT PRIMARY KEY,
                                 employee_id_number VARCHAR(50),
                                 hire_date DATE,
                                 department VARCHAR(100),
@@ -160,7 +160,7 @@ CREATE TABLE staff_profiles (
 -- Tabla: guardian_profiles (Perfil específico de tutores)
 -- -----------------------------------------------------
 CREATE TABLE guardian_profiles (
-                                   user_id CHAR(36) PRIMARY KEY,
+                                   user_id BIGINT PRIMARY KEY,
                                    occupation VARCHAR(100),
                                    is_financial_responsible BOOLEAN DEFAULT FALSE,
 
@@ -171,9 +171,9 @@ CREATE TABLE guardian_profiles (
 -- Tabla: student_guardian_relationships (Relación estudiante-tutor)
 -- -----------------------------------------------------
 CREATE TABLE student_guardian_relationships (
-                                                id CHAR(36) PRIMARY KEY,
-                                                student_user_id CHAR(36) NOT NULL,
-                                                guardian_user_id CHAR(36) NOT NULL,
+                                                id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                                                student_user_id BIGINT NOT NULL,
+                                                guardian_user_id BIGINT NOT NULL,
                                                 relationship_type VARCHAR(50) NOT NULL,
                                                 is_primary_contact BOOLEAN DEFAULT FALSE,
 
@@ -186,8 +186,8 @@ CREATE TABLE student_guardian_relationships (
 -- Tabla: subjects (Materias/Asignaturas)
 -- -----------------------------------------------------
 CREATE TABLE subjects (
-                          id CHAR(36) PRIMARY KEY,
-                          organization_id CHAR(36) NOT NULL,
+                          id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                          organization_id BIGINT NOT NULL,
                           name VARCHAR(255) NOT NULL,
                           subject_code VARCHAR(20) NOT NULL,
                           description TEXT,
@@ -215,8 +215,8 @@ CREATE TABLE subjects (
 -- Tabla: academic_terms (Períodos Académicos)
 -- -----------------------------------------------------
 CREATE TABLE academic_terms (
-                                id CHAR(36) PRIMARY KEY,
-                                organization_id CHAR(36) NOT NULL,
+                                id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                                organization_id BIGINT NOT NULL,
                                 name VARCHAR(255) NOT NULL,
                                 start_date DATE NOT NULL,
                                 end_date DATE NOT NULL,
@@ -243,10 +243,10 @@ CREATE TABLE academic_terms (
 -- Tabla: courses (Cursos específicos)
 -- -----------------------------------------------------
 CREATE TABLE courses (
-                         id CHAR(36) PRIMARY KEY,
-                         subject_id CHAR(36) NOT NULL,
-                         academic_term_id CHAR(36) NOT NULL,
-                         teacher_user_id CHAR(36),
+                         id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                         subject_id BIGINT NOT NULL,
+                         academic_term_id BIGINT NOT NULL,
+                         teacher_user_id BIGINT,
                          course_code VARCHAR(50) NOT NULL,
                          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -261,9 +261,9 @@ CREATE TABLE courses (
 -- Tabla: enrollments (Inscripciones a cursos)
 -- -----------------------------------------------------
 CREATE TABLE enrollments (
-                             id CHAR(36) PRIMARY KEY,
-                             student_user_id CHAR(36) NOT NULL,
-                             course_id CHAR(36) NOT NULL,
+                             id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                             student_user_id BIGINT NOT NULL,
+                             course_id BIGINT NOT NULL,
                              enrollment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                              status ENUM('ACTIVE', 'WITHDRAWN', 'COMPLETED') NOT NULL,
                              final_grade DECIMAL(5,2),
@@ -277,10 +277,10 @@ CREATE TABLE enrollments (
 -- Tabla: audit_logs (Auditoría de seguridad)
 -- -----------------------------------------------------
 CREATE TABLE audit_logs (
-                            id CHAR(36) PRIMARY KEY,
+                            id BIGINT AUTO_INCREMENT PRIMARY KEY,
                             event_type VARCHAR(50) NOT NULL,
-                            user_id CHAR(36),
-                            organization_id CHAR(36),
+                            user_id BIGINT,
+                            organization_id BIGINT,
                             user_email VARCHAR(255),
                             ip_address VARCHAR(45),
                             user_agent TEXT,
@@ -318,8 +318,8 @@ CREATE TABLE audit_logs (
 -- Tabla: organization_security_config (Configuración de seguridad)
 -- -----------------------------------------------------
 CREATE TABLE organization_security_config (
-                                              id CHAR(36) PRIMARY KEY,
-                                              organization_id CHAR(36) NOT NULL,
+                                              id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                                              organization_id BIGINT NOT NULL,
                                               password_min_length INT DEFAULT 12,
                                               password_require_uppercase BOOLEAN DEFAULT TRUE,
                                               password_require_lowercase BOOLEAN DEFAULT TRUE,
@@ -341,10 +341,10 @@ CREATE TABLE organization_security_config (
 -- Tabla: password_audit_log (Auditoría de contraseñas)
 -- -----------------------------------------------------
 CREATE TABLE password_audit_log (
-                                    id CHAR(36) PRIMARY KEY,
-                                    user_id CHAR(36) NOT NULL,
+                                    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                                    user_id BIGINT NOT NULL,
                                     action VARCHAR(50) NOT NULL, -- 'CHANGED', 'RESET', 'EXPIRED'
-                                    performed_by CHAR(36), -- ID del usuario que realizó la acción (NULL si fue automático)
+                                    performed_by BIGINT, -- ID del usuario que realizó la acción (NULL si fue automático)
                                     ip_address VARCHAR(45),
                                     user_agent TEXT,
                                     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -366,8 +366,8 @@ CREATE TRIGGER tr_users_insert_email_index
     FOR EACH ROW
 BEGIN
     IF NEW.organization_id IS NOT NULL THEN
-        INSERT INTO email_organization_index (id, email, organization_id, user_id)
-        VALUES (UUID(), NEW.email, NEW.organization_id, NEW.id);
+        INSERT INTO email_organization_index (email, organization_id, user_id)
+        VALUES (NEW.email, NEW.organization_id, NEW.id);
     END IF;
 END$$
 

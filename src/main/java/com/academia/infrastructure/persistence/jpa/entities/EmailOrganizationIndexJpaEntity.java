@@ -17,17 +17,18 @@ import java.time.LocalDateTime;
 public class EmailOrganizationIndexJpaEntity {
 
     @Id
-    @Column(name = "id", length = 36, columnDefinition = "CHAR(36)")
-    private java.util.UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
 
     @Column(name = "email", nullable = false, unique = true, length = 100)
     private String email;
 
-    @Column(name = "organization_id", nullable = false, length = 36, columnDefinition = "CHAR(36)")
-    private java.util.UUID organizationId;
+    @Column(name = "organization_id", nullable = false)
+    private Long organizationId;
 
-    @Column(name = "user_id", nullable = false, length = 36, columnDefinition = "CHAR(36)")
-    private java.util.UUID userId;
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -48,7 +49,7 @@ public class EmailOrganizationIndexJpaEntity {
      * @param organizationId El ID de la organización a la que pertenece el usuario
      * @param userId El ID del usuario
      */
-    public EmailOrganizationIndexJpaEntity(String email, java.util.UUID organizationId, java.util.UUID userId) {
+    public EmailOrganizationIndexJpaEntity(String email, Long organizationId, Long userId) {
         this.email = email;
         this.organizationId = organizationId;
         this.userId = userId;
@@ -56,9 +57,6 @@ public class EmailOrganizationIndexJpaEntity {
 
     @PrePersist
     protected void onCreate() {
-        if (id == null) {
-            id = java.util.UUID.randomUUID();
-        }
         LocalDateTime now = LocalDateTime.now();
         createdAt = now;
         updatedAt = now;

@@ -176,7 +176,7 @@ public class SecurityAuditService {
      */
     public void logEvent(String eventType, String description, String organizationIdStr) {
         try {
-            OrganizationId orgId = organizationIdStr != null ? OrganizationId.of(organizationIdStr) : null;
+            OrganizationId orgId = organizationIdStr != null ? OrganizationId.of(Long.valueOf(organizationIdStr)) : null;
             
             logSecurityEvent(
                 AuditEventType.BUSINESS_PROCESS,
@@ -321,6 +321,6 @@ public class SecurityAuditService {
 
     private String extractRequestId() {
         // Extraer request ID del MDC o generar uno nuevo
-        return "req-" + java.util.UUID.randomUUID().toString().substring(0, 8);
+        return "req-" + String.valueOf(System.currentTimeMillis()).substring(5);
     }
 }

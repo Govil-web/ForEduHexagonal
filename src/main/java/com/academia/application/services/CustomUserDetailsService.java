@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -49,7 +48,7 @@ public class CustomUserDetailsService implements UserDetailsService {
      * Carga los detalles del usuario por email y organización.
      * Método personalizado que respeta el contexto multi-tenant.
      */
-    public UserDetails loadUserByEmailAndOrganization(String email, UUID organizationId)
+    public UserDetails loadUserByEmailAndOrganization(String email, Long organizationId)
             throws UsernameNotFoundException {
 
         log.debug("Cargando detalles del usuario para email: {} en organización: {}", email, organizationId);
@@ -70,7 +69,7 @@ public class CustomUserDetailsService implements UserDetailsService {
      * Carga los detalles del usuario por ID de cuenta.
      * Útil para validación de tokens JWT.
      */
-    public UserDetails loadUserByAccountId(UUID accountId) throws UsernameNotFoundException {
+    public UserDetails loadUserByAccountId(Long accountId) throws UsernameNotFoundException {
         log.debug("Cargando detalles del usuario por ID: {}", accountId);
 
         UserAccount userAccount = userAccountRepository.findById(new AccountId(accountId))

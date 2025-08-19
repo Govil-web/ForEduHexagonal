@@ -276,8 +276,8 @@ WHERE name IN (
 -- Email: superadmin@plataforma.com
 -- Contraseña: SecureAdm!n2024$
 -- Hash: $2a$12$IZ70/dvg1W8lJGjK5xADcO/fRkMgtdmToXe7HVWT5UWD4ChEJ.u92
-INSERT INTO users (id, organization_id, first_name, last_name, email, password_hash, birth_date, account_status)
-VALUES (UUID(), NULL, 'Super', 'Admin', 'superadmin@plataforma.com',
+INSERT INTO users (organization_id, first_name, last_name, email, password_hash, birth_date, account_status)
+VALUES (NULL, 'Super', 'Admin', 'superadmin@plataforma.com',
         '$2a$12$IZ70/dvg1W8lJGjK5xADcO/fRkMgtdmToXe7HVWT5UWD4ChEJ.u92',
         '1985-01-01', 'ACTIVE');
 
@@ -288,16 +288,16 @@ INSERT INTO user_roles (user_id, role_id) VALUES (@super_admin_id, 1);
 -- =====================================================
 -- ORGANIZACIÓN 1: "Universidad del Futuro"
 -- =====================================================
-INSERT INTO organizations (id, name, subdomain, digital_consent_age)
-VALUES (UUID(), 'Universidad del Futuro', 'unifuturo', 16);
+INSERT INTO organizations (name, subdomain, digital_consent_age)
+VALUES ('Universidad del Futuro', 'unifuturo', 16);
 
 SET @org_unifuturo_id = (SELECT id FROM organizations WHERE subdomain = 'unifuturo');
 
 -- ADMIN DE ORGANIZACIÓN
 -- Email: admin@unifuturo.edu
 -- Contraseña: AdminUni#2024!
-INSERT INTO users (id, organization_id, first_name, last_name, email, password_hash, birth_date, account_status)
-VALUES (UUID(), @org_unifuturo_id, 'Ana', 'Directora', 'admin@unifuturo.edu',
+INSERT INTO users (organization_id, first_name, last_name, email, password_hash, birth_date, account_status)
+VALUES (@org_unifuturo_id, 'Ana', 'Directora', 'admin@unifuturo.edu',
         '$2a$12$bpOrg4RtA4rPysVEkKdXduvhUsGPZDH6mAJxwu4oOr0wA4kcYRDmO',
         '1975-03-15', 'ACTIVE');
 
@@ -308,8 +308,8 @@ INSERT INTO staff_profiles (user_id, title) VALUES (@admin_unifuturo_id, 'Direct
 -- PROFESOR
 -- Email: profesor@unifuturo.edu
 -- Contraseña: TeachUni@2024
-INSERT INTO users (id, organization_id, first_name, last_name, email, password_hash, birth_date, account_status)
-VALUES (UUID(), @org_unifuturo_id, 'Carlos', 'Martinez', 'profesor@unifuturo.edu',
+INSERT INTO users (organization_id, first_name, last_name, email, password_hash, birth_date, account_status)
+VALUES (@org_unifuturo_id, 'Carlos', 'Martinez', 'profesor@unifuturo.edu',
         '$2a$12$VRxH1LzOK6crX5mje6Z0IuJJxF7/n.g6SYFHFKShYO7/vlThF/H5.',
         '1980-07-20', 'ACTIVE');
 
@@ -321,8 +321,8 @@ VALUES (@profesor_unifuturo_id, 'EMP-UF-001', 'Profesor de Ingeniería');
 -- ESTUDIANTE MAYOR DE EDAD (puede hacer login)
 -- Email: estudiante@unifuturo.edu
 -- Contraseña: StudUni$2024
-INSERT INTO users (id, organization_id, first_name, last_name, email, password_hash, birth_date, account_status)
-VALUES (UUID(), @org_unifuturo_id, 'Sofia', 'Estudiante', 'estudiante@unifuturo.edu',
+INSERT INTO users (organization_id, first_name, last_name, email, password_hash, birth_date, account_status)
+VALUES (@org_unifuturo_id, 'Sofia', 'Estudiante', 'estudiante@unifuturo.edu',
         '$2a$12$n1vOgQdREUYZi2SCX5um7uMC0Rp/utdRWbFBFO6b5g0qi.iT3LKFO',
         '2007-05-10', 'ACTIVE'); -- 18 años, mayor que digital_consent_age (16)
 
@@ -334,16 +334,16 @@ VALUES (@estudiante_unifuturo_id, @org_unifuturo_id, 'UF-2025-001', '2025-02-01'
 -- =====================================================
 -- ORGANIZACIÓN 2: "Colegio Primaria Feliz"
 -- =====================================================
-INSERT INTO organizations (id, name, subdomain, digital_consent_age)
-VALUES (UUID(), 'Colegio Primaria Feliz', 'primariafeliz', 18);
+INSERT INTO organizations (name, subdomain, digital_consent_age)
+VALUES ('Colegio Primaria Feliz', 'primariafeliz', 18);
 
 SET @org_primaria_id = (SELECT id FROM organizations WHERE subdomain = 'primariafeliz');
 
 -- ADMIN DE ORGANIZACIÓN
 -- Email: admin@primariafeliz.edu
 -- Contraseña: AdminPrim#2024
-INSERT INTO users (id, organization_id, first_name, last_name, email, password_hash, birth_date, account_status)
-VALUES (UUID(), @org_primaria_id, 'Laura', 'Directora', 'admin@primariafeliz.edu',
+INSERT INTO users (organization_id, first_name, last_name, email, password_hash, birth_date, account_status)
+VALUES (@org_primaria_id, 'Laura', 'Directora', 'admin@primariafeliz.edu',
         '$2a$12$H7CZTR.GCKi6YvxbO3jo7uM9zNYcn2QojMAOhUVYtbzhx1iShtp7.',
         '1978-09-12', 'ACTIVE');
 
@@ -354,8 +354,8 @@ INSERT INTO staff_profiles (user_id, title) VALUES (@admin_primaria_id, 'Directo
 -- PROFESOR
 -- Email: profesor@primariafeliz.edu
 -- Contraseña: TeachPrim@2024
-INSERT INTO users (id, organization_id, first_name, last_name, email, password_hash, birth_date, account_status)
-VALUES (UUID(), @org_primaria_id, 'Roberto', 'Profesor', 'profesor@primariafeliz.edu',
+INSERT INTO users (organization_id, first_name, last_name, email, password_hash, birth_date, account_status)
+VALUES (@org_primaria_id, 'Roberto', 'Profesor', 'profesor@primariafeliz.edu',
         '$2a$12$UjUS237e9usnxgoxLiOm8eUVp/0t8MbLmUClNuEc8Cn2EhVDQZpeC',
         '1985-11-03', 'ACTIVE');
 
@@ -366,8 +366,8 @@ INSERT INTO staff_profiles (user_id, title) VALUES (@profesor_primaria_id, 'Prof
 -- TUTOR/GUARDIAN (puede hacer login)
 -- Email: tutor@email.com
 -- Contraseña: TutorGuard!2024
-INSERT INTO users (id, organization_id, first_name, last_name, email, password_hash, birth_date, account_status)
-VALUES (UUID(), @org_primaria_id, 'Maria', 'Madre', 'tutor@email.com',
+INSERT INTO users (organization_id, first_name, last_name, email, password_hash, birth_date, account_status)
+VALUES (@org_primaria_id, 'Maria', 'Madre', 'tutor@email.com',
         '$2a$12$k5HRkyBMJ591i/5xinrAn./fo3zS2RMKKsw2NnE6tgIZ36h3A3u.G',
         '1985-04-18', 'ACTIVE');
 
@@ -379,8 +379,8 @@ VALUES (@tutor_id, 'Ingeniera', TRUE);
 -- ESTUDIANTE MENOR DE EDAD (NO puede hacer login)
 -- Email: menor@primariafeliz.edu
 -- NO tiene contraseña (password_hash = NULL)
-INSERT INTO users (id, organization_id, first_name, last_name, email, password_hash, birth_date, account_status)
-VALUES (UUID(), @org_primaria_id, 'Pedrito', 'Menor', 'menor@primariafeliz.edu', NULL,
+INSERT INTO users (organization_id, first_name, last_name, email, password_hash, birth_date, account_status)
+VALUES (@org_primaria_id, 'Pedrito', 'Menor', 'menor@primariafeliz.edu', NULL,
         '2016-08-20', 'TUTOR_MANAGED'); -- 9 años, menor que digital_consent_age (18)
 
 SET @menor_id = (SELECT id FROM users WHERE email = 'menor@primariafeliz.edu');
@@ -389,44 +389,44 @@ INSERT INTO student_profiles (user_id, organization_id, student_id_number, enrol
 VALUES (@menor_id, @org_primaria_id, 'PF-2025-001', '2025-02-01', '3er Grado');
 
 -- Relación tutor-estudiante
-INSERT INTO student_guardian_relationships (id, student_user_id, guardian_user_id, relationship_type, is_primary_contact)
-VALUES (UUID(), @menor_id, @tutor_id, 'Madre', TRUE);
+INSERT INTO student_guardian_relationships (student_user_id, guardian_user_id, relationship_type, is_primary_contact)
+VALUES (@menor_id, @tutor_id, 'Madre', TRUE);
 
 -- =====================================================
 -- ESTRUCTURA ACADÉMICA DE EJEMPLO
 -- =====================================================
 
 -- Materias para Universidad del Futuro
-INSERT INTO subjects (id, organization_id, name, subject_code, credits, grade_level)
-VALUES (UUID(), @org_unifuturo_id, 'Programación I', 'PROG-I', 4, 'Ingeniería - Semestre 1');
+INSERT INTO subjects (organization_id, name, subject_code, credits, grade_level)
+VALUES (@org_unifuturo_id, 'Programación I', 'PROG-I', 4, 'Ingeniería - Semestre 1');
 SET @subject_prog_id = (SELECT id FROM subjects WHERE subject_code = 'PROG-I' AND organization_id = @org_unifuturo_id);
 
 -- Período académico
-INSERT INTO academic_terms (id, organization_id, name, start_date, end_date, is_current_term)
-VALUES (UUID(), @org_unifuturo_id, 'Semestre 2025-1', '2025-02-01', '2025-06-30', TRUE);
+INSERT INTO academic_terms (organization_id, name, start_date, end_date, is_current_term)
+VALUES (@org_unifuturo_id, 'Semestre 2025-1', '2025-02-01', '2025-06-30', TRUE);
 SET @term_unifuturo_id = (SELECT id FROM academic_terms WHERE name = 'Semestre 2025-1' AND organization_id = @org_unifuturo_id);
 
 -- Curso
-INSERT INTO courses (id, subject_id, academic_term_id, teacher_user_id, course_code)
-VALUES (UUID(), @subject_prog_id, @term_unifuturo_id, @profesor_unifuturo_id, 'PROG-I-2025-1');
+INSERT INTO courses (subject_id, academic_term_id, teacher_user_id, course_code)
+VALUES (@subject_prog_id, @term_unifuturo_id, @profesor_unifuturo_id, 'PROG-I-2025-1');
 SET @course_prog_id = (SELECT id FROM courses WHERE course_code = 'PROG-I-2025-1');
 
 -- Inscripción del estudiante
-INSERT INTO enrollments (id, student_user_id, course_id, status)
-VALUES (UUID(), @estudiante_unifuturo_id, @course_prog_id, 'ACTIVE');
+INSERT INTO enrollments (student_user_id, course_id, status)
+VALUES (@estudiante_unifuturo_id, @course_prog_id, 'ACTIVE');
 
 -- =====================================================
 -- CONFIGURACIONES DE SEGURIDAD
 -- =====================================================
 
 -- Configuración de seguridad por defecto para las organizaciones
-INSERT INTO organization_security_config (id, organization_id, password_min_length, require_2fa) VALUES
-                                                                                                     (UUID(), @org_unifuturo_id, 12, FALSE), -- Universidad del Futuro
-                                                                                                     (UUID(), @org_primaria_id, 10, FALSE);  -- Colegio Primaria Feliz
+INSERT INTO organization_security_config (organization_id, password_min_length, require_2fa) VALUES
+                                                                                                     (@org_unifuturo_id, 12, FALSE), -- Universidad del Futuro
+                                                                                                     (@org_primaria_id, 10, FALSE);  -- Colegio Primaria Feliz
 
 -- Registrar cambio de contraseñas en auditoría (acción de migración)
-INSERT INTO password_audit_log (id, user_id, action)
-SELECT UUID(), id, 'CHANGED' FROM users
+INSERT INTO password_audit_log (user_id, action)
+SELECT id, 'CHANGED' FROM users
 WHERE email IN (
                 'superadmin@plataforma.com',
                 'admin@unifuturo.edu',

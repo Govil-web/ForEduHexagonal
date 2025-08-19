@@ -7,20 +7,20 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.UUID;
+
 
 @Repository
-public interface SpringSubjectRepository extends JpaRepository<SubjectEntity, UUID> {
+public interface SpringSubjectRepository extends JpaRepository<SubjectEntity, Long> {
     
-    List<SubjectEntity> findByOrganizationId(UUID organizationId);
+    List<SubjectEntity> findByOrganizationId(Long organizationId);
     
-    List<SubjectEntity> findByOrganizationIdAndIsActiveTrue(UUID organizationId);
+    List<SubjectEntity> findByOrganizationIdAndIsActiveTrue(Long organizationId);
     
-    boolean existsByOrganizationIdAndSubjectCode(UUID organizationId, String subjectCode);
+    boolean existsByOrganizationIdAndSubjectCode(Long organizationId, String subjectCode);
     
     @Query("SELECT s FROM SubjectEntity s WHERE s.organizationId = :organizationId AND s.name LIKE %:name%")
-    List<SubjectEntity> findByOrganizationIdAndNameContaining(@Param("organizationId") UUID organizationId, @Param("name") String name);
+    List<SubjectEntity> findByOrganizationIdAndNameContaining(@Param("organizationId") Long organizationId, @Param("name") String name);
     
     @Query("SELECT COUNT(s) FROM SubjectEntity s WHERE s.organizationId = :organizationId AND s.isActive = true")
-    long countActiveSubjectsByOrganization(@Param("organizationId") UUID organizationId);
+    long countActiveSubjectsByOrganization(@Param("organizationId") Long organizationId);
 }

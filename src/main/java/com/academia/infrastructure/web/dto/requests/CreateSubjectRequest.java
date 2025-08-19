@@ -2,11 +2,9 @@ package com.academia.infrastructure.web.dto.requests;
 
 import jakarta.validation.constraints.*;
 
-import java.util.UUID;
-
 public record CreateSubjectRequest(
     @NotNull(message = "Organization ID is required")
-    UUID organizationId,
+    Long organizationId,
     
     @NotBlank(message = "Subject name is required")
     @Size(max = 255, message = "Subject name must not exceed 255 characters")

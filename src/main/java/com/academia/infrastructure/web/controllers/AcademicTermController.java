@@ -22,7 +22,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -57,7 +56,7 @@ public class AcademicTermController {
     
     @GetMapping("/{termId}")
     @PreAuthorize("hasPermission('ACADEMIC_TERM_VIEW')")
-    public ResponseEntity<AcademicTermResponse> getAcademicTerm(@PathVariable UUID termId) {
+    public ResponseEntity<AcademicTermResponse> getAcademicTerm(@PathVariable Long termId) {
         AcademicTerm academicTerm = getAcademicTermDetailsQueryHandler.handle(new AcademicTermId(termId));
         AcademicTermResponse response = AcademicTermResponse.fromDomain(academicTerm);
         
@@ -67,7 +66,7 @@ public class AcademicTermController {
     @GetMapping
     @PreAuthorize("hasPermission('ACADEMIC_TERM_VIEW')")
     public ResponseEntity<List<AcademicTermResponse>> getAcademicTermsByOrganization(
-            @RequestParam UUID organizationId,
+            @RequestParam Long organizationId,
             @RequestParam(defaultValue = "false") boolean onlyActive) {
         
         List<AcademicTerm> terms;
@@ -86,7 +85,7 @@ public class AcademicTermController {
     
     @GetMapping("/current")
     @PreAuthorize("hasPermission('ACADEMIC_TERM_VIEW')")
-    public ResponseEntity<AcademicTermResponse> getCurrentTerm(@RequestParam UUID organizationId) {
+    public ResponseEntity<AcademicTermResponse> getCurrentTerm(@RequestParam Long organizationId) {
         return academicTermRepository.findCurrentTermByOrganization(new OrganizationId(organizationId))
             .map(term -> ResponseEntity.ok(AcademicTermResponse.fromDomain(term)))
             .orElse(ResponseEntity.notFound().build());
@@ -95,7 +94,7 @@ public class AcademicTermController {
     @PutMapping("/{termId}/dates")
     @PreAuthorize("hasPermission('ACADEMIC_TERM_UPDATE')")
     public ResponseEntity<AcademicTermResponse> updateTermDates(
-            @PathVariable UUID termId,
+            @PathVariable Long termId,
             @Valid @RequestBody UpdateTermDatesRequest request) {
         
         AcademicTerm academicTerm = updateAcademicTermDatesService.updateAcademicTermDates(
@@ -110,7 +109,7 @@ public class AcademicTermController {
     
     @PostMapping("/{termId}/start")
     @PreAuthorize("hasPermission('ACADEMIC_TERM_MANAGE')")
-    public ResponseEntity<AcademicTermResponse> startTerm(@PathVariable UUID termId) {
+    public ResponseEntity<AcademicTermResponse> startTerm(@PathVariable Long termId) {
         AcademicTerm academicTerm = startAcademicTermService.startAcademicTerm(new AcademicTermId(termId));
         AcademicTermResponse response = AcademicTermResponse.fromDomain(academicTerm);
         
@@ -119,7 +118,7 @@ public class AcademicTermController {
     
     @PostMapping("/{termId}/end")
     @PreAuthorize("hasPermission('ACADEMIC_TERM_MANAGE')")
-    public ResponseEntity<AcademicTermResponse> endTerm(@PathVariable UUID termId) {
+    public ResponseEntity<AcademicTermResponse> endTerm(@PathVariable Long termId) {
         AcademicTerm academicTerm = endAcademicTermService.endAcademicTerm(new AcademicTermId(termId));
         AcademicTermResponse response = AcademicTermResponse.fromDomain(academicTerm);
         
@@ -129,8 +128,8 @@ public class AcademicTermController {
     @PostMapping("/{termId}/set-current")
     @PreAuthorize("hasPermission('ACADEMIC_TERM_MANAGE')")
     public ResponseEntity<AcademicTermResponse> setCurrentTerm(
-            @PathVariable UUID termId,
-            @RequestParam UUID organizationId) {
+            @PathVariable Long termId,
+            @RequestParam Long organizationId) {
         
         AcademicTerm academicTerm = setCurrentTermService.setCurrentTerm(
             new AcademicTermId(termId),

@@ -13,8 +13,9 @@ import java.time.LocalDateTime;
 public class OrganizationJpaEntity {
 
     @Id
-    @Column(name = "id", length = 36, columnDefinition = "CHAR(36)")
-    private java.util.UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
 
     @Column(nullable = false, length = 100)
     private String name;
@@ -40,9 +41,8 @@ public class OrganizationJpaEntity {
         createdAt = now;
         updatedAt = now;
 
-        // Generar ID UUID si no existe
         if (id == null) {
-            id = java.util.UUID.randomUUID();
+            id = 1L;
         }
     }
 

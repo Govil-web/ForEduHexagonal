@@ -22,7 +22,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -56,7 +55,7 @@ public class SubjectController {
     
     @GetMapping("/{subjectId}")
     @PreAuthorize("hasPermission('ACADEMIC_SUBJECT_VIEW')")
-    public ResponseEntity<SubjectResponse> getSubject(@PathVariable UUID subjectId) {
+    public ResponseEntity<SubjectResponse> getSubject(@PathVariable Long subjectId) {
         Subject subject = getSubjectDetailsQueryHandler.handle(new SubjectId(subjectId));
         SubjectResponse response = SubjectResponse.fromDomain(subject);
         
@@ -66,7 +65,7 @@ public class SubjectController {
     @GetMapping
     @PreAuthorize("hasPermission('ACADEMIC_SUBJECT_VIEW')")
     public ResponseEntity<List<SubjectResponse>> getSubjectsByOrganization(
-            @RequestParam UUID organizationId,
+            @RequestParam Long organizationId,
             @RequestParam(defaultValue = "false") boolean onlyActive) {
         
         List<Subject> subjects = getSubjectsByOrganizationQueryHandler.handle(
@@ -82,7 +81,7 @@ public class SubjectController {
     @PutMapping("/{subjectId}")
     @PreAuthorize("hasPermission('ACADEMIC_SUBJECT_UPDATE')")
     public ResponseEntity<SubjectResponse> updateSubject(
-            @PathVariable UUID subjectId,
+            @PathVariable Long subjectId,
             @Valid @RequestBody UpdateSubjectRequest request) {
         
         UpdateSubjectCommand command = new UpdateSubjectCommand(
@@ -100,7 +99,7 @@ public class SubjectController {
     
     @PostMapping("/{subjectId}/activate")
     @PreAuthorize("hasPermission('ACADEMIC_SUBJECT_UPDATE')")
-    public ResponseEntity<SubjectResponse> activateSubject(@PathVariable UUID subjectId) {
+    public ResponseEntity<SubjectResponse> activateSubject(@PathVariable Long subjectId) {
         Subject subject = activateSubjectService.activateSubject(new SubjectId(subjectId));
         SubjectResponse response = SubjectResponse.fromDomain(subject);
         
@@ -109,7 +108,7 @@ public class SubjectController {
     
     @PostMapping("/{subjectId}/deactivate")
     @PreAuthorize("hasPermission('ACADEMIC_SUBJECT_UPDATE')")
-    public ResponseEntity<SubjectResponse> deactivateSubject(@PathVariable UUID subjectId) {
+    public ResponseEntity<SubjectResponse> deactivateSubject(@PathVariable Long subjectId) {
         Subject subject = deactivateSubjectService.deactivateSubject(new SubjectId(subjectId));
         SubjectResponse response = SubjectResponse.fromDomain(subject);
         

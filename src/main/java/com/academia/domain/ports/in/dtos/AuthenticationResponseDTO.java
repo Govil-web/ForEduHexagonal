@@ -3,7 +3,6 @@ package com.academia.domain.ports.in.dtos;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * DTO que representa la respuesta de un login exitoso.
@@ -20,7 +19,7 @@ public record AuthenticationResponseDTO(
      * DTO anidado con información del usuario autenticado.
      */
     public record UserAuthInfoDTO(
-            UUID accountId,
+            Long accountId,
             String fullName,
             String email,
             String accountStatus,
@@ -33,7 +32,7 @@ public record AuthenticationResponseDTO(
      * DTO anidado con información de la organización.
      */
     public record OrganizationInfoDTO(
-            UUID organizationId,
+            Long organizationId,
             String name,
             String subdomain
     ) {}

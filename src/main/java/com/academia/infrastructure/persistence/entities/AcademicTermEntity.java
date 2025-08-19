@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.util.UUID;
 
 @Entity
 @Table(name = "academic_terms")
@@ -16,11 +15,12 @@ import java.util.UUID;
 public class AcademicTermEntity {
     
     @Id
-    @Column(name = "id", length = 36, columnDefinition = "CHAR(36)")
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
     
-    @Column(name = "organization_id", nullable = false, length = 36, columnDefinition = "CHAR(36)")
-    private UUID organizationId;
+    @Column(name = "organization_id", nullable = false)
+    private Long organizationId;
     
     @Column(name = "name", nullable = false, length = 255)
     private String name;
@@ -46,8 +46,7 @@ public class AcademicTermEntity {
     @PrePersist
     protected void onCreate() {
         if (id == null) {
-            id = UUID.randomUUID();
-        }
+                    }
         createdAt = java.time.Instant.now();
         updatedAt = java.time.Instant.now();
     }

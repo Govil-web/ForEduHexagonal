@@ -28,8 +28,8 @@ public class CreateSubjectService {
             throw new IllegalArgumentException("Organization ID cannot be null");
         }
         
-        // Crear value objects
-        SubjectId subjectId = new SubjectId();
+        // Crear value objects (null se asignará automáticamente por la BD)
+        SubjectId subjectId = new SubjectId(null);
         SubjectCode subjectCode = new SubjectCode(subjectCodeValue);
         
         // Crear el agregado Subject

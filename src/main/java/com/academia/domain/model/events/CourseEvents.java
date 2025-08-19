@@ -2,16 +2,15 @@ package com.academia.domain.model.events;
 import com.academia.domain.model.valueobjects.ids.AccountId;
 import com.academia.domain.model.valueobjects.ids.CourseId;
 import java.time.Instant;
-import java.util.UUID;
 
 public class CourseEvents {
-    public record TeacherAssignedToCourse(UUID eventId, Instant occurredOn, CourseId courseId, AccountId teacherId) implements DomainEvent {
+    public record TeacherAssignedToCourse(Long eventId, Instant occurredOn, CourseId courseId, AccountId teacherId) implements DomainEvent {
         public TeacherAssignedToCourse(CourseId courseId, AccountId teacherId) {
-            this(UUID.randomUUID(), Instant.now(), courseId, teacherId);
+            this(null, Instant.now(), courseId, teacherId);
         }
 
         @Override
-        public UUID getEventId() {
+        public Long getEventId() {
             return eventId();
         }
 
@@ -20,13 +19,13 @@ public class CourseEvents {
             return occurredOn();
         }
     }
-    public record StudentEnrolledInCourse(UUID eventId, Instant occurredOn, AccountId studentId, CourseId courseId) implements DomainEvent {
+    public record StudentEnrolledInCourse(Long eventId, Instant occurredOn, AccountId studentId, CourseId courseId) implements DomainEvent {
         public StudentEnrolledInCourse(AccountId studentId, CourseId courseId) {
-            this(UUID.randomUUID(), Instant.now(), studentId, courseId);
+            this(null, Instant.now(), studentId, courseId);
         }
 
         @Override
-        public UUID getEventId() {
+        public Long getEventId() {
             return eventId();
         }
 

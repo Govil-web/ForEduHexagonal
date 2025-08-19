@@ -34,5 +34,5 @@ public interface EmailOrganizationIndexRepository {
      * @param organizationId El ID de la organización
      * @param userId El ID del usuario
      */
-    void registerEmail(Email email, OrganizationId organizationId, java.util.UUID userId);
+    void registerEmail(Email email, OrganizationId organizationId, Long userId);
 }

@@ -3,11 +3,10 @@ package com.academia.infrastructure.web.dto.responses;
 import com.academia.domain.model.aggregates.AcademicTerm;
 
 import java.time.LocalDate;
-import java.util.UUID;
 
 public record AcademicTermResponse(
-    UUID id,
-    UUID organizationId,
+    Long id,
+    Long organizationId,
     String name,
     LocalDate startDate,
     LocalDate endDate,

@@ -18,7 +18,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
@@ -189,12 +188,12 @@ public class JwtTokenProviderImpl implements JwtTokenProvider {
      * Extrae el ID del usuario del token.
      */
     @Override
-    public UUID extractUserId(String token) {
+    public Long extractUserId(String token) {
         Map<String, Object> claims = extractClaims(token);
         Object userId = claims.get("userId");
 
-        if (userId instanceof String) {
-            return UUID.fromString((String) userId);
+        if (userId != null) {
+            return Long.valueOf(userId.toString());
         }
         throw new IllegalArgumentException("ID de usuario no encontrado en el token");
     }
@@ -204,7 +203,7 @@ public class JwtTokenProviderImpl implements JwtTokenProvider {
      * Puede devolver null para usuarios del sistema.
      */
     @Override
-    public UUID extractOrganizationId(String token) {
+    public Long extractOrganizationId(String token) {
         Map<String, Object> claims = extractClaims(token);
         Object orgId = claims.get("organizationId");
 
@@ -213,10 +212,7 @@ public class JwtTokenProviderImpl implements JwtTokenProvider {
             return null;
         }
         
-        if (orgId instanceof String) {
-            return UUID.fromString((String) orgId);
-        }
-        throw new IllegalArgumentException("ID de organización no encontrado en el token");
+        return Long.valueOf(orgId.toString());
     }
 
     /**

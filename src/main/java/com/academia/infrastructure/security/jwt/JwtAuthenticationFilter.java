@@ -18,7 +18,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * Filtro de autenticación JWT que se ejecuta en cada petición HTTP.
@@ -78,9 +77,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private void authenticateUser(String jwt, HttpServletRequest request) {
         try {
             // Extraer información del token
-            UUID userId = jwtTokenProvider.extractUserId(jwt);
+            Long userId = jwtTokenProvider.extractUserId(jwt);
             String email = jwtTokenProvider.extractEmail(jwt);
-            UUID organizationId = jwtTokenProvider.extractOrganizationId(jwt);
+            Long organizationId = jwtTokenProvider.extractOrganizationId(jwt);
 
             // Cargar detalles del usuario usando nuestro UserDetailsService personalizado
             UserDetails userDetails = userDetailsService.loadUserByAccountId(userId);

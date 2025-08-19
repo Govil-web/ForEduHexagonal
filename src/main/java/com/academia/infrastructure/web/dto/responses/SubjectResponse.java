@@ -2,11 +2,9 @@ package com.academia.infrastructure.web.dto.responses;
 
 import com.academia.domain.model.aggregates.Subject;
 
-import java.util.UUID;
-
 public record SubjectResponse(
-    UUID id,
-    UUID organizationId,
+    Long id,
+    Long organizationId,
     String name,
     String subjectCode,
     String description,

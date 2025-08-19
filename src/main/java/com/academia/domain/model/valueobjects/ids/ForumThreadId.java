@@ -1,28 +1,19 @@
 package com.academia.domain.model.valueobjects.ids;
 
 import lombok.Value;
-import java.util.UUID;
 
 @Value
 public class ForumThreadId {
-    UUID value;
+    Long value;
     
-    public ForumThreadId(String value) {
-        this(UUID.fromString(value));
-    }
-    
-    public ForumThreadId(UUID value) {
+    public ForumThreadId(Long value) {
         if (value == null) {
             throw new IllegalArgumentException("ForumThreadId cannot be null");
         }
         this.value = value;
     }
     
-    public static ForumThreadId of(String value) {
-        return new ForumThreadId(value);
-    }
-    
-    public static ForumThreadId of(UUID value) {
+    public static ForumThreadId of(Long value) {
         return new ForumThreadId(value);
     }
 }

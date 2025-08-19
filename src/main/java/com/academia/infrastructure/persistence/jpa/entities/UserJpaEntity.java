@@ -17,11 +17,12 @@ import java.util.Set;
 public class UserJpaEntity {
 
     @Id
-    @Column(name = "id", length = 36, columnDefinition = "CHAR(36)")
-    private java.util.UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
 
-    @Column(name = "organization_id", length = 36, columnDefinition = "CHAR(36)")
-    private java.util.UUID organizationId;
+    @Column(name = "organization_id")
+    private Long organizationId;
 
     // Nombres de campo explícitos que coinciden con el Value Object del Dominio
     @Column(name = "first_name", nullable = false, length = 50)

@@ -39,8 +39,8 @@ public class CreateAcademicTermService {
             }
         }
         
-        // Crear value objects
-        AcademicTermId termId = new AcademicTermId();
+        // Crear value objects (null se asignará automáticamente por la BD)
+        AcademicTermId termId = new AcademicTermId(null);
         TermDates termDates = new TermDates(startDate, endDate);
         
         // Crear el agregado AcademicTerm

@@ -15,14 +15,15 @@ import java.time.LocalDateTime;
 public class RefreshTokenJpaEntity {
 
     @Id
-    @Column(name = "id", length = 36, columnDefinition = "CHAR(36)")
-    private java.util.UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
 
     @Column(name = "token", nullable = false, unique = true, length = 500)
     private String token;
 
-    @Column(name = "user_id", nullable = false, length = 36, columnDefinition = "CHAR(36)")
-    private java.util.UUID userId;
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
 
     @Column(name = "expires_at", nullable = false)
     private LocalDateTime expiresAt;
@@ -36,7 +37,7 @@ public class RefreshTokenJpaEntity {
     @Column(name = "revoked_at")
     private LocalDateTime revokedAt;
 
-    public RefreshTokenJpaEntity(String token, java.util.UUID userId, LocalDateTime expiresAt) {
+    public RefreshTokenJpaEntity(String token, Long userId, LocalDateTime expiresAt) {
         this.token = token;
         this.userId = userId;
         this.expiresAt = expiresAt;
@@ -45,9 +46,6 @@ public class RefreshTokenJpaEntity {
 
     @PrePersist
     protected void onCreate() {
-        if (id == null) {
-            id = java.util.UUID.randomUUID();
-        }
         if (createdAt == null) {
             createdAt = LocalDateTime.now();
         }

@@ -3,7 +3,6 @@ package com.academia.domain.ports.out;
 import com.academia.domain.model.aggregates.UserAccount;
 import java.time.LocalDateTime;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * Puerto de salida para la generación y validación de tokens JWT.
@@ -70,7 +69,7 @@ public interface JwtTokenProvider {
      * @param token Token JWT
      * @return ID del usuario
      */
-    UUID extractUserId(String token);
+    Long extractUserId(String token);
 
     /**
      * Extrae el ID de la organización del token.
@@ -79,5 +78,5 @@ public interface JwtTokenProvider {
      * @param token Token JWT
      * @return ID de la organización o null
      */
-    UUID extractOrganizationId(String token);
+    Long extractOrganizationId(String token);
 }

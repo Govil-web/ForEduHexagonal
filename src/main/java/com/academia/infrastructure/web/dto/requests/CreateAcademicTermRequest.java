@@ -3,11 +3,10 @@ package com.academia.infrastructure.web.dto.requests;
 import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;
-import java.util.UUID;
 
 public record CreateAcademicTermRequest(
     @NotNull(message = "Organization ID is required")
-    UUID organizationId,
+    Long organizationId,
     
     @NotBlank(message = "Term name is required")
     @Size(max = 255, message = "Term name must not exceed 255 characters")

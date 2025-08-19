@@ -9,27 +9,26 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.UUID;
 
 @Repository
-public interface SpringAcademicTermRepository extends JpaRepository<AcademicTermEntity, UUID> {
+public interface SpringAcademicTermRepository extends JpaRepository<AcademicTermEntity, Long> {
     
-    List<AcademicTermEntity> findByOrganizationId(UUID organizationId);
+    List<AcademicTermEntity> findByOrganizationId(Long organizationId);
     
-    List<AcademicTermEntity> findByOrganizationIdAndIsActiveTrue(UUID organizationId);
+    List<AcademicTermEntity> findByOrganizationIdAndIsActiveTrue(Long organizationId);
     
-    List<AcademicTermEntity> findByOrganizationIdAndIsCurrentTermTrue(UUID organizationId);
+    List<AcademicTermEntity> findByOrganizationIdAndIsCurrentTermTrue(Long organizationId);
     
-    boolean existsByOrganizationIdAndName(UUID organizationId, String name);
+    boolean existsByOrganizationIdAndName(Long organizationId, String name);
     
     @Query("SELECT t FROM AcademicTermEntity t WHERE t.organizationId = :organizationId AND t.startDate <= :date AND t.endDate >= :date AND t.isActive = true")
-    List<AcademicTermEntity> findActiveTermsOnDate(@Param("organizationId") UUID organizationId, @Param("date") LocalDate date);
+    List<AcademicTermEntity> findActiveTermsOnDate(@Param("organizationId") Long organizationId, @Param("date") LocalDate date);
     
     @Query("SELECT t FROM AcademicTermEntity t WHERE t.organizationId = :organizationId AND t.endDate < :date")
-    List<AcademicTermEntity> findPastTerms(@Param("organizationId") UUID organizationId, @Param("date") LocalDate date);
+    List<AcademicTermEntity> findPastTerms(@Param("organizationId") Long organizationId, @Param("date") LocalDate date);
     
     @Query("SELECT t FROM AcademicTermEntity t WHERE t.organizationId = :organizationId AND t.startDate > :date")
-    List<AcademicTermEntity> findFutureTerms(@Param("organizationId") UUID organizationId, @Param("date") LocalDate date);
+    List<AcademicTermEntity> findFutureTerms(@Param("organizationId") Long organizationId, @Param("date") LocalDate date);
 
     /**
      * Nuevo método: Desmarca todos los términos actuales de una organización.
@@ -37,5 +36,5 @@ public interface SpringAcademicTermRepository extends JpaRepository<AcademicTerm
      */
     @Modifying
     @Query("UPDATE AcademicTermEntity t SET t.isCurrentTerm = false WHERE t.organizationId = :organizationId AND t.isCurrentTerm = true")
-    void unmarkAllCurrentTermsInOrganization(@Param("organizationId") UUID organizationId);
+    void unmarkAllCurrentTermsInOrganization(@Param("organizationId") Long organizationId);
 }

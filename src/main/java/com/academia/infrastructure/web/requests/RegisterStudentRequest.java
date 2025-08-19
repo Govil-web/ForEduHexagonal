@@ -6,7 +6,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.UUID;
 
 /**
  * DTO (Data Transfer Object) que representa el cuerpo de la petición HTTP
@@ -14,7 +13,7 @@ import java.util.UUID;
  */
 public record RegisterStudentRequest(
         @NotNull
-        UUID organizationId,
+        Long organizationId,
 
         @NotBlank @Size(min = 2, max = 50)
         String firstName,
